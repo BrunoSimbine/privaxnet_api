@@ -1,0 +1,14 @@
+services:
+  txapo_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - faturize_api_network
+
+networks:
+  faturize_api_network:
+    driver: bridge
+      
