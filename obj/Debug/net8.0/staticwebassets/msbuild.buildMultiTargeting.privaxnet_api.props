@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/privaxnet_api.props" />
+</Project>
