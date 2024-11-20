@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using privaxnet_api.ViewModels;
+using privaxnet_api.Dtos;
 
 
 namespace privaxnet_api.Controllers;

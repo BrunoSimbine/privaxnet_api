@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using privaxnet_api.ViewModels;
+using privaxnet_api.Dtos;
 
 
 namespace privaxnet_api.Controllers;
@@ -17,7 +18,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("status")]
-    public ActionResult GetToken([FromQuery string token])
+    public ActionResult GetToken([FromQuery] string token)
     {
         var login = new SessionViewModel();
         return Ok(login);
