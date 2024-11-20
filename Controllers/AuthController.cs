@@ -8,13 +8,20 @@ namespace privaxnet_api.Controllers;
 [Route("[controller]")]
 public class AuthController : ControllerBase
 {
-    [HttpGet("login")]
-    public ActionResult<LoginViewModel> GetToken(){
+    [HttpPost("login")]
+    public ActionResult<SessionViewModel> GetToken(SessionDto sessionDto){
 
-        var login = new LoginViewModel();
+        var login = new SessionViewModel();
         return Ok(login);
 
     }
 
+    [HttpGet("status")]
+    public ActionResult GetToken([FromQuery string token])
+    {
+        var login = new SessionViewModel();
+        return Ok(login);
+
+    }  
 
 }
