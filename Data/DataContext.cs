@@ -7,7 +7,7 @@ public class DataContext : DbContext
 {
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
-		optionsBuilder.UseInMemoryDatabase("MyDatabase");
+		optionsBuilder.UseInMemoryDatabase("MyDatabase1");
 	}
 
 	public DbSet<User> Users { get; set; }
