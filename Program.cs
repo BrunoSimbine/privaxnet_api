@@ -1,5 +1,5 @@
+using privaxnet_api.Dtos;
 using privaxnet_api.Data;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
