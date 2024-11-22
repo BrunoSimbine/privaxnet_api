@@ -28,8 +28,7 @@ public class UserController : ControllerBase
         _authService.CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
         var user = new User()
         {
-            Name = userDto.Name,
-            Email = userDto.Email
+            Name = userDto.Name
         };
 
         user.PasswordHash = passwordHash;

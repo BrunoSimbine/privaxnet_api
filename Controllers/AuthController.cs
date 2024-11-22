@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using privaxnet_api.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using privaxnet_api.Dtos;
 using privaxnet_api.Data;
 using privaxnet_api.Models;
@@ -31,22 +32,35 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public ActionResult<SessionViewModel> GetToken(UserDto userDto)
+    public async Task<ActionResult<SessionViewModel>> GetToken(SessionDto sessionDto)
     {
-        var user = new User { Name = userDto.Name };
-        var token = _authService.CreateToken(user);
+
+        try {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Name == sessionDto.Name);
+
+            if (_authService.VerifyPasswordHash(sessionDto.Password, user.PasswordHash, user.PasswordSalt)){
+                var token = _authService.CreateToken(user);
+                var isValid = _authService.IsTokenValid(token);
+                var expiration = _authService.TokenExpires(token);
+                var session = new SessionViewModel{ Token = token, IsValid = isValid, Expires = expiration };
+                return Ok(session);
+            }
+
+            return NotFound();
+
+        } catch (Exception ex ) {
+            return NotFound();
+        }
+
+    }
+
+    [HttpGet("status")]
+    public ActionResult VerifyToken([FromQuery] string token)
+    {
         var isValid = _authService.IsTokenValid(token);
         var expiration = _authService.TokenExpires(token);
         var session = new SessionViewModel{ Token = token, IsValid = isValid, Expires = expiration };
         return Ok(session);
-    }
-
-    [HttpGet("status")]
-    public ActionResult GetTxoken([FromQuery] string token)
-    {
-        var login = new SessionViewModel();
-        return Ok(login);
-
 
     }  
 
