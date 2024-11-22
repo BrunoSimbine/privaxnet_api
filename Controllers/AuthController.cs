@@ -46,10 +46,10 @@ public class AuthController : ControllerBase
                 return Ok(session);
             }
 
-            return NotFound();
+            return BadRequest("Nome de usuario ou senha invalido");
 
         } catch (Exception ex ) {
-            return NotFound();
+            return BadRequest("Nome de usuario ou senha invalido");
         }
 
     }
