@@ -61,12 +61,13 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("get/{Id}"), Authorize]
-    public async Task<ActionResult<User>> GetUserById(Guid Id)
+    public async Task<ActionResult<UserDetails>> GetUserById(Guid Id)
     {
         bool userExists = await _context.Users.AnyAsync(x => x.Id == Id);
         if (userExists) {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
-            return Ok(user);
+            var userDetails = new UserDetails { Name = user.Name, Id = user.Id, Status = user.Status, Role = user.Role, ClientId = user.ClientId, Phone = user.Phone  };
+            return Ok(userDetails);
         }
         
         return NotFound("Usuario nao encontrado");
@@ -89,6 +90,6 @@ public class UserController : ControllerBase
             number /= 62;
         } while (number > 0);
 
-        return result.ToString().Substring(0, 6);
+        return result.ToString().Substring(1, 7);
     }
 }
