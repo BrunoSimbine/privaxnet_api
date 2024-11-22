@@ -31,21 +31,28 @@ public class UserController : ControllerBase
     [HttpPost("create")]
     public async Task<ActionResult<UserViewModel>> GetToken(UserDto userDto)
     {
-        _authService.CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
-        var user = new User()
-        {
-            Name = userDto.Name
-        };
+        bool userExists = await _context.Users.AnyAsync(x => x.Name == userDto.Name);
+        if (!userExists) {
+            _authService.CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            var user = new User()
+            {
+                Name = userDto.Name,
+                Phone = userDto.Phone
+            };
 
-        user.PasswordHash = passwordHash;
-        user.PasswordSalt = passwordSalt;
-        user.ClientId = GuidToBase62(Guid.NewGuid());
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return Created("https://privaxnet.com/users/get/1", user);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            user.ClientId = GuidToBase62(Guid.NewGuid());
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return Created("https://privaxnet.com/users/get/1", user);
+        }
+
+        return BadRequest("O nome de usuario ja existe!");
+
     }
 
-    [HttpPost("all"), Authorize]
+    [HttpGet("all"), Authorize]
     public async Task<ActionResult<List<UserViewModel>>> GetUsers()
     {
         var users = await _context.Users.ToListAsync();
