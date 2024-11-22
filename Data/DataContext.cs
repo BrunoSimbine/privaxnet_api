@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using privaxnet_api.Models;
 
+
 namespace privaxnet_api.Data;
 
 public class DataContext : DbContext

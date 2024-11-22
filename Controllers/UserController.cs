@@ -21,10 +21,12 @@ public class UserController : ControllerBase
     [HttpPost("create")]
     public async  Task<ActionResult<UserViewModel>> GetToken(UserDto userDto)
     {
-        var user = new User { Name= userDto.Name, Email = userDto.Email };
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return Ok(user);
+        //var user = new User { Name= userDto.Name, Email = userDto.Email };
+        //_context.Users.Add(user);
+        //await _context.SaveChangesAsync();
+        //return Ok(user);
+
+        return Ok("Ols");
 
     }
 

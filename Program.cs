@@ -1,5 +1,12 @@
 using privaxnet_api.Dtos;
 using privaxnet_api.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
+using Swashbuckle.AspNetCore.Filters;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,8 +26,33 @@ builder.Services.AddCors(options => {
 });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Description = "Some Description",
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+    
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+});
+
+builder.Services.AddAuthentication(options => {
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer( options => {
+    options.TokenValidationParameters = new TokenValidationParameters{
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = false,
+        ValidIssuer = "bruno.com",
+        ValidAudience = "bruno.com",
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("jwfhgfhjsgdvjhdsg837483hf8743tfg8734gfyegf7634gf38734"))
+    };
+});
 builder.Services.AddDbContext<DataContext>();
 
 builder.WebHost.ConfigureKestrel(options =>
@@ -29,13 +61,14 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 var app = builder.Build();
+app.UseAuthentication();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseCors("MyPolicy");
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
