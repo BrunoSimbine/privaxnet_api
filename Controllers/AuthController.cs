@@ -42,7 +42,7 @@ public class AuthController : ControllerBase
                 var token = _authService.CreateToken(user);
                 var isValid = _authService.IsTokenValid(token);
                 var expiration = _authService.TokenExpires(token);
-                var session = new SessionViewModel{ Token = token, IsValid = isValid, Expires = expiration };
+                var session = new SessionViewModel{ Token = token, IsValid = isValid, Expires = expiration, UserId = user.Id };
                 return Ok(session);
             }
 
@@ -59,7 +59,7 @@ public class AuthController : ControllerBase
     {
         var isValid = _authService.IsTokenValid(token);
         var expiration = _authService.TokenExpires(token);
-        var session = new SessionViewModel{ Token = token, IsValid = isValid, Expires = expiration };
+        var session = new SessionViewModel{ Token = token, IsValid = isValid, Expires = expiration, UserId = Guid.NewGuid() };
         return Ok(session);
 
     }  
