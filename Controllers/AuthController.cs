@@ -44,11 +44,13 @@ public class AuthController : ControllerBase
             "bruno.com",
             "bruno.com",
             claims,
+            expires: DateTime.Now.AddDays(2),
             signingCredentials: signIn
             );
 
         string tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
-        return Ok(tokenValue);
+        var session = new SessionViewModel { Token = tokenValue, Status = "Active"};
+        return Ok(session);
 
 
         //return Ok(user);
