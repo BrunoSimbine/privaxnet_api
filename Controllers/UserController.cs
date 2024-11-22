@@ -60,6 +60,20 @@ public class UserController : ControllerBase
 
     }
 
+    [HttpGet("get/{Id}"), Authorize]
+    public async Task<ActionResult<User>> GetUserById(Guid Id)
+    {
+        bool userExists = await _context.Users.AnyAsync(x => x.Id == Id);
+        if (userExists) {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+            return Ok(user);
+        }
+        
+        return NotFound("Usuario nao encontrado");
+
+    }
+
+
     private string GuidToBase62(Guid guid) {
         var base62Chars = "0123456789abcdefghijklmnopqestuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         byte[] bytes = guid.ToByteArray();
