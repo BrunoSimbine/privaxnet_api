@@ -1,4 +1,5 @@
 using privaxnet_api.Dtos;
+using privaxnet_api.Services.AuthService;
 using privaxnet_api.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +55,7 @@ builder.Services.AddAuthentication(options => {
     };
 });
 builder.Services.AddDbContext<DataContext>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
