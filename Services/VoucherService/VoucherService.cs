@@ -3,6 +3,8 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using privaxnet_api.Models;
+using privaxnet_api.Services.UserService;
+using privaxnet_api.Services.ProductService;
 using privaxnet_api.Dtos;
 using privaxnet_api.Data;
 using privaxnet_api.Exceptions;

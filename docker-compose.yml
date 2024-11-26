@@ -1,14 +1,14 @@
 services:
-  txapo_api:
+  privaxnet_api:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:5000"
+      - "5000:5000"
     networks:
-      - faturize_api_network
+      - privaxnet_api_network
 
 networks:
-  faturize_api_network:
+  privaxnet_api_network:
     driver: bridge
       
