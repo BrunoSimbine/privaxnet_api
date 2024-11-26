@@ -1,5 +1,8 @@
 using privaxnet_api.Dtos;
 using privaxnet_api.Services.AuthService;
+using privaxnet_api.Services.UserService;
+using privaxnet_api.Services.ProductService;
+using privaxnet_api.Services.VoucherService;
 using privaxnet_api.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -56,10 +59,14 @@ builder.Services.AddAuthentication(options => {
 });
 builder.Services.AddDbContext<DataContext>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IVoucherService, VoucherService>();
+
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(8080);
+    options.ListenAnyIP(5000);
 });
 
 var app = builder.Build();

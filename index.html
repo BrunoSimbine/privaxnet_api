@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width-device-width, initial-scale=1.0">
+	<title>RTMP to HLS Player</title>
+	<link href="https://vjs.zencdn.net/8.5.0/video-js.css" rel="stylesheet">
+</head>
+<body>
+	<video
+		id="hls-video"
+		class="video-js vjs-default-skin"
+		controls
+		width="640"
+		height="360"
+		autoplay
+		data-setup='{}'>
+		<source src="https://jafar.co.mz/live/bruno.m3u8" type="application/x-mpegURL">
+	</video>
+	<script type="text/javascript" src="https://vjs.zencdn.net/8.5.0/video.min.js"></script>
+</body>

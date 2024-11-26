@@ -3,11 +3,56 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using privaxnet_api.Models;
+using privaxnet_api.Dtos;
+using privaxnet_api.Data;
+using privaxnet_api.Exceptions;
+using privaxnet_api.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace privaxnet_api.Services.AuthService;
 
 public class AuthService : IAuthService
 {
+
+    private readonly DataContext _context;
+
+
+    public AuthService(DataContext context)
+    {
+        _context = context;
+    }
+
+
+    public async Task<SessionViewModel> GetToken(SessionDto sessionDto)
+    {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Name == sessionDto.Name);
+            var session = new SessionViewModel();
+            if (VerifyPasswordHash(sessionDto.Password, user.PasswordHash, user.PasswordSalt)){
+                var token = CreateToken(user);
+                var isValid = IsTokenValid(token);
+                var expiration = TokenExpires(token);
+                session.Token = token;
+                session.IsValid = isValid;
+                session.Expires = expiration;
+                session.UserId = user.Id;
+
+                return session;
+            } else {
+                throw new UserOrPassInvalidException("Usuario ou senha invalido");
+                return session;
+            }
+    }
+
+    public SessionViewModel VerifyToken(string token)
+    {
+        var isValid = IsTokenValid(token);
+        var expiration = TokenExpires(token);
+        var session = new SessionViewModel{ Token = token, IsValid = isValid, Expires = expiration, UserId = Guid.NewGuid() };
+        return session;
+    }  
+
+
+
     public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
         using var hmac = new HMACSHA256();

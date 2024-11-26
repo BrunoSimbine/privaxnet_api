@@ -17,7 +17,7 @@ RUN dotnet publish -c Release -o out
 # https://github.com/dotnet/dotnet-docker/blob/main/samples/enable-globalization.md
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
-EXPOSE 8080
+EXPOSE 5000
 WORKDIR /app
 COPY --from=build /app/out .
 # Uncomment to enable non-root user

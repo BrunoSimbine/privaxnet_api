@@ -21,47 +21,26 @@ namespace privaxnet_api.Controllers;
 [Route("[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly DataContext _context;
     private readonly IAuthService _authService;
 
 
-    public AuthController(DataContext context, IAuthService authService)
+    public AuthController(IAuthService authService)
     {
         _authService = authService;
-        _context = context;
     }
 
     [HttpPost("login")]
     public async Task<ActionResult<SessionViewModel>> GetToken(SessionDto sessionDto)
     {
-
-        try {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Name == sessionDto.Name);
-
-            if (_authService.VerifyPasswordHash(sessionDto.Password, user.PasswordHash, user.PasswordSalt)){
-                var token = _authService.CreateToken(user);
-                var isValid = _authService.IsTokenValid(token);
-                var expiration = _authService.TokenExpires(token);
-                var session = new SessionViewModel{ Token = token, IsValid = isValid, Expires = expiration, UserId = user.Id };
-                return Ok(session);
-            }
-
-            return BadRequest("Nome de usuario ou senha invalido");
-
-        } catch (Exception ex ) {
-            return BadRequest("Nome de usuario ou senha invalido");
-        }
-
+        var session = await _authService.GetToken(sessionDto);
+        return Ok(session);
     }
 
     [HttpGet("status")]
     public ActionResult VerifyToken([FromQuery] string token)
     {
-        var isValid = _authService.IsTokenValid(token);
-        var expiration = _authService.TokenExpires(token);
-        var session = new SessionViewModel{ Token = token, IsValid = isValid, Expires = expiration, UserId = Guid.NewGuid() };
+        var session = _authService.VerifyToken(token);
         return Ok(session);
-
     }  
 
 }
