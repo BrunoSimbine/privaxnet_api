@@ -24,16 +24,24 @@ public class ProductService : IProductService
 
     public async Task<Product> CreateProduct(ProductDto productDto)
     {
-        var product = new Product {
-            Name = productDto.Name,
-            Price = productDto.Price,
-            DataAmount = productDto.DataAmount
-        };
+        bool productExists = await _context.Products.AnyAsync(x => x.Name == productDto.Name);
+        if (!productExists) {
+            var product = new Product {
+                Name = productDto.Name,
+                Price = productDto.Price,
+                DataAmount = productDto.DataAmount,
+                DurationDays = productDto.DurationDays
+            };
 
-        _context.Products.Add(product);
-        await _context.SaveChangesAsync();
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
 
-        return product;
+            return product;
+        } else {
+            throw new ProductAlreadyExistsException("O Produto ja existe!");
+            return new Product();
+        }
+
     }
 
     public async Task<List<Product>> GetProducts()
@@ -53,6 +61,7 @@ public class ProductService : IProductService
             return product;
         }else{
             throw new ProductNotFoundException("Produto nao encontrado");
+            return new Product();
         }
     }
 

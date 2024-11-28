@@ -91,10 +91,17 @@ public class UserService : IUserService
     {
         var id = GetId();
         var user = await GetUserById(id);
-        user.DataAvaliable -= data;
-        user.DataUsed += data;
-        await _context.SaveChangesAsync();
-        return true;
+        if (user.DataAvaliable >= data) {
+            user.DataAvaliable -= data;
+            user.DataUsed += data;
+            await _context.SaveChangesAsync();
+            return true;
+        } else {
+            user.DataAvaliable = 0;
+            await _context.SaveChangesAsync();
+            return false;
+        }
+
     }
 
 

@@ -15,11 +15,9 @@ namespace privaxnet_api.Services.VoucherService;
 
 public class VoucherService : IVoucherService
 {
-
     private readonly DataContext _context;
     private readonly IUserService _userService;
     private readonly IProductService _productService;
-
 
     public VoucherService(DataContext context, IUserService userService, IProductService productService)
     {
@@ -32,26 +30,37 @@ public class VoucherService : IVoucherService
     {
         var agentId = _userService.GetId();
         var agent = await _userService.GetUserById(agentId);
-        var product = await _productService.GetProduct(voucherDto.ProductId);
-        var voucher = new Voucher { Product = product, Agent = agent, RequestPhone = voucherDto.RequestPhone };
-        voucher.Code = GenerateCode();
-        _context.Vouchers.Add(voucher);
-        await _context.SaveChangesAsync();
-        return voucher;
+        bool productExists = await _context.Products.AnyAsync(x => x.Id == voucherDto.ProductId);
+        if (productExists) {
+            var product = await _productService.GetProduct(voucherDto.ProductId);
+            var voucher = new Voucher { Product = product, Agent = agent, RequestPhone = voucherDto.RequestPhone };
+            voucher.Code = GenerateCode();
+            _context.Vouchers.Add(voucher);
+            await _context.SaveChangesAsync();
+            return voucher;
+        } else {
+            throw new ProductNotFoundException("disu");
+            return new Voucher();
+        }
+
     }
 
     public async Task<bool> UseVoucher(string Code)
     {
         var voucher = await GetVoucherByCode(Code);
-        var IsUsed = await _userService.Recharge(voucher);
-        if(IsUsed) {
-            voucher.Status = "Inactive";
-            await _context.SaveChangesAsync();
-
-            return true;
+        if(voucher.Status == "Active"){
+            var IsUsed = await _userService.Recharge(voucher);
+            if(IsUsed) {
+                voucher.Status = "Inactive";
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            throw new VoucherAlreadyUsedException("");
+            return false;
+        } else {
+            throw new VoucherAlreadyUsedException("");
+            return false;
         }
-
-        return false;
     }
 
     public async Task<List<VoucherViewModel>> GetVouchers()
@@ -98,7 +107,6 @@ public class VoucherService : IVoucherService
         if (voucherExists) {
             var voucher = await _context.Vouchers.Where(x => x.Code == Code)
             .FirstOrDefaultAsync();
-
             return voucher;
         }else{
             throw new VoucherNotFoundException("Voucher nao existe");
@@ -108,11 +116,7 @@ public class VoucherService : IVoucherService
 
     private string GenerateCode(){
         string chars = "ABCDEFGHIJ1234567890";
-
         Random random = new Random();
         return new string(Enumerable.Repeat(chars, 16).Select(s => s[random.Next(s.Length)]).ToArray());
     }
-
-
 }
-

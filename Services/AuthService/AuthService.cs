@@ -25,6 +25,8 @@ public class AuthService : IAuthService
 
     public async Task<SessionViewModel> GetToken(SessionDto sessionDto)
     {
+        bool userExists = await _context.Users.AnyAsync(x => x.Name == sessionDto.Name);
+        if (userExists) {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Name == sessionDto.Name);
             var session = new SessionViewModel();
             if (VerifyPasswordHash(sessionDto.Password, user.PasswordHash, user.PasswordSalt)){
@@ -41,6 +43,10 @@ public class AuthService : IAuthService
                 throw new UserOrPassInvalidException("Usuario ou senha invalido");
                 return session;
             }
+        } else {
+            throw new UserOrPassInvalidException("Usuario ou senha invsalidos");
+            return new SessionViewModel();
+        }
     }
 
     public SessionViewModel VerifyToken(string token)

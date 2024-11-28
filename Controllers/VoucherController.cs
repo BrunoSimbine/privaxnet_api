@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using privaxnet_api.Dtos;
 using privaxnet_api.Data;
 using privaxnet_api.Models;
+using privaxnet_api.Exceptions;
 using privaxnet_api.Services.VoucherService;
 using Microsoft.AspNetCore.Authorization;
 
@@ -33,8 +34,16 @@ public class VoucherController : ControllerBase
     [HttpPost("use/{code}"), Authorize]
     public async Task<ActionResult<VoucherViewModel>> UseVoucher(string code)
     {
-        var used = _voucherService.UseVoucher(code);
-        return Ok(used);
+        try {
+            var used = _voucherService.UseVoucher(code);
+            return Ok(used);
+        } catch (VoucherAlreadyUsedException ex) {
+            return Conflict(new {
+                type = "error",
+                code = 409,
+                message = "Voucher ja foi usado!"
+            });
+        }
     }
 
     [HttpGet("all"), Authorize]
@@ -47,8 +56,15 @@ public class VoucherController : ControllerBase
     [HttpPost("get/{Id}"), Authorize]
     public async Task<ActionResult<VoucherViewModel>> GetVoucher(Guid Id)
     {
-        return Ok("obter usuario especifico");
+        try {
+            var voucher = _voucherService.GetVoucher(Id);
+            return Ok(voucher);
+        }catch (VoucherNotFoundException ex) {
+            return NotFound(new {
+                type = "error",
+                code = 404,
+                message = "Voucher nao encontrado!!"
+            });
+        }
     }
-
-
 }

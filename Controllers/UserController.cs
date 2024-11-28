@@ -7,6 +7,7 @@ using privaxnet_api.ViewModels;
 using privaxnet_api.Dtos;
 using privaxnet_api.Data;
 using privaxnet_api.Models;
+using privaxnet_api.Exceptions;
 using privaxnet_api.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using System;
@@ -29,8 +30,17 @@ public class UserController : ControllerBase
     [HttpPost("create")]
     public async Task<ActionResult<UserViewModel>> CreateUser(UserDto userDto)
     {
-        var user = await _userService.CreateUser(userDto);
-        return Ok(user);
+        try {
+            var user = await _userService.CreateUser(userDto);
+            return Ok(user);
+        } catch (UserAlreadyExistsException ex) {
+            return Conflict(new {
+                type = "error",
+                code = 409,
+                message = "O nome de usuario ja existe!"
+            });
+        }
+
     }
 
     [HttpGet("all"), Authorize]
@@ -43,14 +53,31 @@ public class UserController : ControllerBase
     [HttpGet("get/{Id}"), Authorize]
     public async Task<ActionResult<User>> GetUserById(Guid Id)
     {
-        var user = await _userService.GetUserById(Id);
-        return Ok(user);
+        try {
+            var user = await _userService.GetUserById(Id);
+            return Ok(user);
+        } catch (UserNotFoundException ex) {
+            return NotFound(new {
+                type = "error",
+                code = 404,
+                message = "Usuario nao encontrado!"
+            });
+        }
     }
                                                                                            
     [HttpGet("consuption/{data}"), Authorize]
     public async Task<ActionResult<User>> AddConsuption(long data)
     {
         var consuption = await _userService.AddConsuption(data);
+        if(consuption){
+            return Ok(new {
+                type = "success",
+                code = 200,
+                message = "Consumido com sucesso!"
+            });
+        }else{
+            return Forbid();
+        }
         return Ok(consuption);
     }
 

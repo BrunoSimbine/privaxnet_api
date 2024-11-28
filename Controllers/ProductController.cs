@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using privaxnet_api.Dtos;
 using privaxnet_api.Data;
 using privaxnet_api.Models;
+using privaxnet_api.Exceptions;
 using privaxnet_api.Services.ProductService;
 using Microsoft.AspNetCore.Authorization;
 
@@ -25,8 +26,16 @@ public class ProductController : ControllerBase
     [HttpPost("create"), Authorize]
     public async Task<ActionResult<Product>> CreateProduct([FromForm]ProductDto productDto)
     {
-        var product = await _productService.CreateProduct(productDto);
-        return Ok(product);
+        try {
+            var product = await _productService.CreateProduct(productDto);
+            return Ok(product);
+        } catch (ProductAlreadyExistsException ex) {
+            return Conflict(new {
+                type = "error",
+                code = 409,
+                message = "O produto ja existe!"
+            });
+        }
     }
 
     [HttpGet("all")]
@@ -39,7 +48,16 @@ public class ProductController : ControllerBase
     [HttpPost("get/{Id}"), Authorize]
     public async Task<ActionResult<ProductViewModel>> GetProduct(Guid Id)
     {
-        var product = await _productService.GetProduct(Id);
-        return Ok(product);
+        try {
+            var product = await _productService.GetProduct(Id);
+            return Ok(product);
+        } catch (ProductNotFoundException ex) {
+            return NotFound(new {
+                type = "error",
+                code = 404,
+                message = "Produto nao encontrado!!"
+            });
+        }
+
     }
 }

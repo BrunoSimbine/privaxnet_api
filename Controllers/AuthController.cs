@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using privaxnet_api.Dtos;
 using privaxnet_api.Data;
 using privaxnet_api.Models;
+using privaxnet_api.Exceptions;
 using privaxnet_api.Services.AuthService;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
@@ -32,15 +33,16 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<SessionViewModel>> GetToken(SessionDto sessionDto)
     {
-        var session = await _authService.GetToken(sessionDto);
-        return Ok(session);
+        try {
+            var session = await _authService.GetToken(sessionDto);
+            return Ok(session);
+        } catch (UserOrPassInvalidException ex) {
+            return Unauthorized(new {
+                type = "error",
+                code = 401,
+                message = "Nome de usuario ou senha invalido!"
+            });
+        }
     }
-
-    [HttpGet("status")]
-    public ActionResult VerifyToken([FromQuery] string token)
-    {
-        var session = _authService.VerifyToken(token);
-        return Ok(session);
-    }  
 
 }

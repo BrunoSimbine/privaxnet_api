@@ -9,4 +9,5 @@ public class ProductDto
     public IFormFile Image { get; set; }
     public decimal Price { get; set; }
     public long DataAmount { get; set; }
+    public int DurationDays { get; set; }
 }
