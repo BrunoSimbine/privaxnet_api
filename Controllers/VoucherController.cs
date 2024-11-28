@@ -26,19 +26,22 @@ public class VoucherController : ControllerBase
     [HttpPost("register"), Authorize]
     public async Task<ActionResult<VoucherViewModel>> CreateVoucher(VoucherDto voucherDto)
     {
-        return Ok("Registar Usuario");
+        var voucher = await _voucherService.CreateVoucher(voucherDto);
+        return Ok(voucher);
     }
 
-    [HttpPost("use/{Id}"), Authorize]
-    public async Task<ActionResult<VoucherViewModel>> UseVoucher(Guid Id)
+    [HttpPost("use/{code}"), Authorize]
+    public async Task<ActionResult<VoucherViewModel>> UseVoucher(string code)
     {
-        return Ok("Consumir Voucher");
+        var used = _voucherService.UseVoucher(code);
+        return Ok(used);
     }
 
     [HttpGet("all"), Authorize]
     public async Task<ActionResult<List<VoucherViewModel>>> GetVouchers()
     {
-        return Ok("Obter todos usuarios");
+        var vouchers = await _voucherService.GetVouchers();
+        return Ok(vouchers);
     }
 
     [HttpPost("get/{Id}"), Authorize]

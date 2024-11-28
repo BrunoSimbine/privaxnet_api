@@ -5,7 +5,7 @@ using privaxnet_api.Models;
 using privaxnet_api.Data;
 using privaxnet_api.Exceptions;
 using privaxnet_api.Services.AuthService;
-
+using privaxnet_api.Services.ProductService;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Text;
@@ -17,18 +17,20 @@ public class UserService : IUserService
     private readonly IHttpContextAccessor _accessor;
 	private readonly DataContext _context;
     private readonly IAuthService _authService;
+    private readonly IProductService _productService;
 
-    public UserService(IHttpContextAccessor accessor, DataContext context, IAuthService authService)
+    public UserService(IHttpContextAccessor accessor, DataContext context, IAuthService authService, IProductService productService)
     {
         _accessor = accessor;
         _authService = authService;
         _context = context;
+        _productService = productService;
     }
 
-    public Guid? GetId()
+    public Guid GetId()
     {
         var id = _accessor.HttpContext?.User.FindFirstValue(ClaimTypes.Sid);
-        return Guid.Parse(id!);
+        return Guid.Parse(id);
     }
 
     public async Task<User> CreateUser(UserDto userDto)
@@ -61,6 +63,7 @@ public class UserService : IUserService
 
     }
 
+
     public async Task<User> GetUserById(Guid Id)
     {
     	var user = new User();
@@ -72,6 +75,26 @@ public class UserService : IUserService
         	throw new UserNotFoundException("Usuario nao encontrado!");
         	return user;
         }
+    }
+
+    public async Task<bool> Recharge(Voucher voucher)
+    {
+        var Id = GetId();
+        var user = await GetUserById(Id);
+        var pruduct = await _productService.GetProduct(voucher.ProductId);
+        user.Expires = DateTime.Now.AddDays(pruduct.DurationDays);
+        user.DataAvaliable += pruduct.DataAmount;
+        return true;
+    }
+
+    public async Task<bool> AddConsuption(long data) 
+    {
+        var id = GetId();
+        var user = await GetUserById(id);
+        user.DataAvaliable -= data;
+        user.DataUsed += data;
+        await _context.SaveChangesAsync();
+        return true;
     }
 
 

@@ -36,10 +36,8 @@ public class UserController : ControllerBase
     [HttpGet("all"), Authorize]
     public async Task<ActionResult<List<UserViewModel>>> GetUsers()
     {
-
         var users = await _userService.GetUsers();
         return Ok(users);
-
     }
 
     [HttpGet("get/{Id}"), Authorize]
@@ -47,6 +45,13 @@ public class UserController : ControllerBase
     {
         var user = await _userService.GetUserById(Id);
         return Ok(user);
+    }
+
+    [HttpGet("consuption/{data}"), Authorize]
+    public async Task<ActionResult<User>> AddConsuption(long data)
+    {
+        var consuption = await _userService.AddConsuption(data);
+        return Ok(consuption);
     }
 
 }

@@ -7,8 +7,8 @@ public class VoucherViewModel
     public string Code { get; set; }
     public string Status { get; set; }
 
-
-    public DateTime CreatedAt { get; set; }
-    public DateTime UsedAt { get; set; }
-
+    public Guid ProductId { get; set; }
+    public Guid UserId { get; set; }
+    public Guid AgentId { get; set; }
+    public string RequestPhone { get; set; }
 }

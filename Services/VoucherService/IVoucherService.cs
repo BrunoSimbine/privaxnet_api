@@ -6,7 +6,8 @@ namespace privaxnet_api.Services.VoucherService;
 public interface IVoucherService
 {
     Task<Voucher> CreateVoucher(VoucherDto voucherDto);
-    Task<VoucherViewModel> UseVoucher(Guid Id);
+    Task<bool> UseVoucher(string Code);
     Task<List<VoucherViewModel>> GetVouchers();
+    Task<Voucher> GetVoucherByCode(string Code);
     Task<VoucherViewModel> GetVoucher(Guid Id);
 }
