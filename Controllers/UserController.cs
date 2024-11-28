@@ -46,7 +46,7 @@ public class UserController : ControllerBase
         var user = await _userService.GetUserById(Id);
         return Ok(user);
     }
-
+                                                                                           
     [HttpGet("consuption/{data}"), Authorize]
     public async Task<ActionResult<User>> AddConsuption(long data)
     {
