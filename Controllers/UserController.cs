@@ -31,7 +31,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<UserViewModel>> CreateUser(UserDto userDto)
     {
         try {
-            var user = await _userService.CreateUser(userDto);
+            var user = await _userService.CreateUserAsync(userDto);
             return Ok(user);
         } catch (UserAlreadyExistsException ex) {
             return Conflict(new {
@@ -43,18 +43,18 @@ public class UserController : ControllerBase
 
     }
 
-    [HttpGet("all"), Authorize]
+    [HttpGet("all"), Authorize(Roles = "admin")]
     public async Task<ActionResult<List<UserViewModel>>> GetUsers()
     {
-        var users = await _userService.GetUsers();
+        var users = await _userService.GetUsersAsync();
         return Ok(users);
     }
 
-    [HttpGet("get/{Id}"), Authorize]
+    [HttpGet("get/{Id}"), Authorize(Roles = "admin")]
     public async Task<ActionResult<User>> GetUserById(Guid Id)
     {
         try {
-            var user = await _userService.GetUserById(Id);
+            var user = await _userService.GetUserByIdAsync(Id);
             return Ok(user);
         } catch (UserNotFoundException ex) {
             return NotFound(new {
@@ -62,6 +62,22 @@ public class UserController : ControllerBase
                 code = 404,
                 message = "Usuario nao encontrado!"
             });
+        }
+    }
+
+
+    [HttpGet("get"), Authorize]
+    public async Task<ActionResult<User>> GetUser()
+    {
+        try {
+            var user = await _userService.GetUserAsync();
+            return Ok(user);
+        } catch (UserNotFoundException ex) {
+            return NotFound(new {
+                type = "error",
+                code = 404,
+                message = "Usuario nao encontrado!"
+            }); 
         }
     }
                                                                                            

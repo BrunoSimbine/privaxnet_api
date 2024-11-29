@@ -5,9 +5,10 @@ namespace privaxnet_api.Services.VoucherService;
 
 public interface IVoucherService
 {
-    Task<Voucher> CreateVoucher(VoucherDto voucherDto);
-    Task<bool> UseVoucher(string Code);
-    Task<List<VoucherViewModel>> GetVouchers();
-    Task<Voucher> GetVoucherByCode(string Code);
-    Task<VoucherViewModel> GetVoucher(Guid Id);
+    Task<Voucher> CreateVoucherAsync(VoucherDto voucherDto);
+    Task<bool> UseVoucherAsync(string Code);
+    Task<List<VoucherViewModel>> GetVouchersAsync();
+    Voucher GetVoucherByCode(string Code);
+    Task<Voucher> GetVoucherByCodeAsync(string Code);
+    Task<VoucherViewModel> GetVoucherAsync(Guid Id);
 }

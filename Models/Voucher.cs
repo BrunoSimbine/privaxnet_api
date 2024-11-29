@@ -10,7 +10,7 @@ public class Voucher
     public string Code { get; set; }
     public string Status { get; set; } = "Active"; 
 
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.Now.ToUniversalTime();
     public DateTime UsedAt { get; set; }
 
     public Product Product { get; set; }

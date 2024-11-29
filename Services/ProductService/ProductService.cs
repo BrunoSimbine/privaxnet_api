@@ -22,9 +22,9 @@ public class ProductService : IProductService
         _context = context;
     }
 
-    public async Task<Product> CreateProduct(ProductDto productDto)
+    public async Task<Product> CreateProductAsync(ProductDto productDto)
     {
-        bool productExists = await _context.Products.AnyAsync(x => x.Name == productDto.Name);
+        bool productExists = _context.Products.Any(x => x.Name == productDto.Name);
         if (!productExists) {
             var product = new Product {
                 Name = productDto.Name,
@@ -35,13 +35,11 @@ public class ProductService : IProductService
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
-
             return product;
         } else {
             throw new ProductAlreadyExistsException("O Produto ja existe!");
             return new Product();
         }
-
     }
 
     public async Task<List<Product>> GetProducts()
@@ -50,14 +48,29 @@ public class ProductService : IProductService
         return products;
     }
 
-    public async Task<Product> GetProduct(Guid Id)
+    public async Task<Product> GetProductAsync(Guid Id)
     {
 
         var product = new Product();
-        bool productExists = await _context.Products.AnyAsync(x => x.Id == Id);
+        bool productExists = _context.Products.Any(x => x.Id == Id);
 
         if (productExists) {
             product = await _context.Products.FirstOrDefaultAsync(x => x.Id == Id);
+            return product;
+        }else{
+            throw new ProductNotFoundException("Produto nao encontrado");
+            return new Product();
+        }
+    }
+
+    public Product GetProduct(Guid Id)
+    {
+
+        var product = new Product();
+        bool productExists = _context.Products.Any(x => x.Id == Id);
+
+        if (productExists) {
+            product = _context.Products.FirstOrDefault(x => x.Id == Id);
             return product;
         }else{
             throw new ProductNotFoundException("Produto nao encontrado");

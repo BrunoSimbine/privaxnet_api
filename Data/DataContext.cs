@@ -8,7 +8,8 @@ public class DataContext : DbContext
 {
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
-		optionsBuilder.UseInMemoryDatabase("MyDatabase1");
+		var connection = "User ID=bruno;Password=bruno1234;Server=167.235.138.208;Port=32771;Database=bruno;";
+		optionsBuilder.UseNpgsql(connection);
 	}
 
 	public DbSet<User> Users { get; set; }

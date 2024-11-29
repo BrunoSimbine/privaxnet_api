@@ -6,7 +6,8 @@ namespace privaxnet_api.Services.ProductService;
 
 public interface IProductService
 {
-    Task<Product> CreateProduct(ProductDto productDto);
+    Task<Product> CreateProductAsync(ProductDto productDto);
     Task<List<Product>> GetProducts();
-    Task<Product> GetProduct(Guid Id);
+    Product GetProduct(Guid Id);
+    Task<Product> GetProductAsync(Guid Id);
 }

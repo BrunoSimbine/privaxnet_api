@@ -23,11 +23,11 @@ public class ProductController : ControllerBase
         _productService = productService;
     }
 
-    [HttpPost("create"), Authorize]
+    [HttpPost("create"), Authorize(Roles = "admin")]
     public async Task<ActionResult<Product>> CreateProduct([FromForm]ProductDto productDto)
     {
         try {
-            var product = await _productService.CreateProduct(productDto);
+            var product = await _productService.CreateProductAsync(productDto);
             return Ok(product);
         } catch (ProductAlreadyExistsException ex) {
             return Conflict(new {
@@ -49,7 +49,7 @@ public class ProductController : ControllerBase
     public async Task<ActionResult<ProductViewModel>> GetProduct(Guid Id)
     {
         try {
-            var product = await _productService.GetProduct(Id);
+            var product = await _productService.GetProductAsync(Id);
             return Ok(product);
         } catch (ProductNotFoundException ex) {
             return NotFound(new {

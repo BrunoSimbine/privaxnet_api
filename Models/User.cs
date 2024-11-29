@@ -15,7 +15,7 @@ public class User
     public int Balance { get; set; }
     public long DataAvaliable { get; set; }
     public long DataUsed { get; set; } 
-    public DateTime Expires { get; set; } = DateTime.Now;
+    public DateTime Expires { get; set; } = DateTime.Now.ToUniversalTime();
 
 
     [JsonIgnore]

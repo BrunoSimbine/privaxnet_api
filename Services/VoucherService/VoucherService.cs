@@ -26,13 +26,13 @@ public class VoucherService : IVoucherService
         _productService = productService;
     }
 
-    public async Task<Voucher> CreateVoucher(VoucherDto voucherDto)
+    public async Task<Voucher> CreateVoucherAsync(VoucherDto voucherDto)
     {
         var agentId = _userService.GetId();
-        var agent = await _userService.GetUserById(agentId);
-        bool productExists = await _context.Products.AnyAsync(x => x.Id == voucherDto.ProductId);
+        var agent = _userService.GetUserById(agentId);
+        bool productExists = _context.Products.Any(x => x.Id == voucherDto.ProductId);
         if (productExists) {
-            var product = await _productService.GetProduct(voucherDto.ProductId);
+            var product = _productService.GetProduct(voucherDto.ProductId);
             var voucher = new Voucher { Product = product, Agent = agent, RequestPhone = voucherDto.RequestPhone };
             voucher.Code = GenerateCode();
             _context.Vouchers.Add(voucher);
@@ -45,13 +45,15 @@ public class VoucherService : IVoucherService
 
     }
 
-    public async Task<bool> UseVoucher(string Code)
+    public async Task<bool> UseVoucherAsync(string Code)
     {
-        var voucher = await GetVoucherByCode(Code);
+        var voucher = GetVoucherByCode(Code);
         if(voucher.Status == "Active"){
-            var IsUsed = await _userService.Recharge(voucher);
+            var IsUsed = await _userService.RechargeAsync(voucher);
             if(IsUsed) {
                 voucher.Status = "Inactive";
+                voucher.UsedAt = DateTime.Now.ToUniversalTime();
+                voucher.User = _userService.GetUser();
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -63,7 +65,7 @@ public class VoucherService : IVoucherService
         }
     }
 
-    public async Task<List<VoucherViewModel>> GetVouchers()
+    public async Task<List<VoucherViewModel>> GetVouchersAsync()
     {
         var vouchers = await _context.Vouchers.Select(x => new VoucherViewModel {
             Id = x.Id,
@@ -78,9 +80,9 @@ public class VoucherService : IVoucherService
         return vouchers;
     }
 
-    public async Task<VoucherViewModel> GetVoucher(Guid Id)
+    public async Task<VoucherViewModel> GetVoucherAsync(Guid Id)
     {
-        bool voucherExists = await _context.Vouchers.AnyAsync(x => x.Id == Id);
+        bool voucherExists = _context.Vouchers.Any(x => x.Id == Id);
         if (voucherExists) {
             var voucher = await _context.Vouchers.Where(x => x.Id == Id)
             .Select(x => new VoucherViewModel 
@@ -101,12 +103,25 @@ public class VoucherService : IVoucherService
         }
     }
 
-    public async Task<Voucher> GetVoucherByCode(string Code)
+    public async Task<Voucher> GetVoucherByCodeAsync(string Code)
     {
-        bool voucherExists = await _context.Vouchers.AnyAsync(x => x.Code == Code);
+        bool voucherExists = _context.Vouchers.Any(x => x.Code == Code);
         if (voucherExists) {
             var voucher = await _context.Vouchers.Where(x => x.Code == Code)
             .FirstOrDefaultAsync();
+            return voucher;
+        }else{
+            throw new VoucherNotFoundException("Voucher nao existe");
+            return new Voucher();
+        }
+    }
+
+    public Voucher GetVoucherByCode(string Code)
+    {
+        bool voucherExists = _context.Vouchers.Any(x => x.Code == Code);
+        if (voucherExists) {
+            var voucher = _context.Vouchers.Where(x => x.Code == Code)
+            .FirstOrDefault();
             return voucher;
         }else{
             throw new VoucherNotFoundException("Voucher nao existe");

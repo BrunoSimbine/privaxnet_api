@@ -33,10 +33,10 @@ public class UserService : IUserService
         return Guid.Parse(id);
     }
 
-    public async Task<User> CreateUser(UserDto userDto)
+    public async Task<User> CreateUserAsync(UserDto userDto)
     {
 		var user = new User();
-		bool userExists = await _context.Users.AnyAsync(x => x.Name == userDto.Name);
+		bool userExists = _context.Users.Any(x => x.Name == userDto.Name);
         if (!userExists) {
             _authService.CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
             
@@ -56,7 +56,7 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<List<User>> GetUsers()
+    public async Task<List<User>> GetUsersAsync()
     {
         var users = await _context.Users.ToListAsync();
         return users;
@@ -64,10 +64,10 @@ public class UserService : IUserService
     }
 
 
-    public async Task<User> GetUserById(Guid Id)
+    public async Task<User> GetUserByIdAsync(Guid Id)
     {
     	var user = new User();
-        bool userExists = await _context.Users.AnyAsync(x => x.Id == Id);
+        bool userExists = _context.Users.Any(x => x.Id == Id);
         if (userExists) {
             user = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
             return user;
@@ -77,11 +77,38 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<bool> Recharge(Voucher voucher)
+    public User GetUserById(Guid Id)
+    {
+        var user = new User();
+        bool userExists = _context.Users.Any(x => x.Id == Id);
+        if (userExists) {
+            user = _context.Users.FirstOrDefault(x => x.Id == Id);
+            return user;
+        }else{
+            throw new UserNotFoundException("Usuario nao encontrado!");
+            return user;
+        }
+    }
+
+    public async Task<User> GetUserAsync()
     {
         var Id = GetId();
-        var user = await GetUserById(Id);
-        var pruduct = await _productService.GetProduct(voucher.ProductId);
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+        return user;
+    }
+
+    public User GetUser()
+    {
+        var Id = GetId();
+        var user = _context.Users.FirstOrDefault(x => x.Id == Id);
+        return user;
+    }
+
+    public async Task<bool> RechargeAsync(Voucher voucher)
+    {
+        var Id = GetId();
+        var user = await GetUserByIdAsync(Id);
+        var pruduct = await _productService.GetProductAsync(voucher.ProductId);
         user.Expires = DateTime.Now.AddDays(pruduct.DurationDays);
         user.DataAvaliable += pruduct.DataAmount;
         return true;
@@ -90,7 +117,7 @@ public class UserService : IUserService
     public async Task<bool> AddConsuption(long data) 
     {
         var id = GetId();
-        var user = await GetUserById(id);
+        var user = await GetUserByIdAsync(id);
         if (user.DataAvaliable >= data) {
             user.DataAvaliable -= data;
             user.DataUsed += data;
