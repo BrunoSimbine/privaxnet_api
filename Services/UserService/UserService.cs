@@ -77,6 +77,21 @@ public class UserService : IUserService
         }
     }
 
+    public async Task<User> SetRolesAsync(Guid Id, string role)
+    {
+        var user = new User();
+        bool userExists = _context.Users.Any(x => x.Id == Id);
+        if (userExists) {
+            user = _context.Users.FirstOrDefault(x => x.Id == Id);
+            user.Role = role;
+            await _context.SaveChangesAsync();
+            return user;
+        }else{
+            throw new UserNotFoundException("Usuario nao encontrado!");
+            return user;
+        }
+    }
+
     public User GetUserById(Guid Id)
     {
         var user = new User();

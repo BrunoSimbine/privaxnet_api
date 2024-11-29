@@ -40,9 +40,22 @@ public class UserController : ControllerBase
                 message = "O nome de usuario ja existe!"
             });
         }
-
     }
 
+    [HttpPost("roles/set/{UserId}")]
+    public async Task<ActionResult<UserViewModel>> SetPermission([FromQuery] string Roles, Guid UserId)
+    {
+        try {
+            var user = await _userService.SetRolesAsync(UserId, Roles);
+            return Ok(user);
+        } catch (UserNotFoundException ex) {
+            return NotFound(new {
+                type = "error",
+                code = 409,
+                message = "O nome de usuario ja existe!"
+            });
+        }
+    }
     [HttpGet("all"), Authorize(Roles = "admin")]
     public async Task<ActionResult<List<UserViewModel>>> GetUsers()
     {
