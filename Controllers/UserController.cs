@@ -42,7 +42,7 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpPost("roles/set/{UserId}")]
+    [HttpPost("roles/set/{UserId}"), Authorize(Roles = "admin")]
     public async Task<ActionResult<UserViewModel>> SetPermission([FromQuery] string Roles, Guid UserId)
     {
         try {
