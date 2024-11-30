@@ -12,8 +12,8 @@ using privaxnet_api.Data;
 namespace privaxnet_api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241129174143_InitialMigrations")]
-    partial class InitialMigrations
+    [Migration("20241130074008_YTiu")]
+    partial class YTiu
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -146,8 +146,6 @@ namespace privaxnet_api.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Vouchers");
                 });
 
@@ -165,17 +163,9 @@ namespace privaxnet_api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("privaxnet_api.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Agent");
 
                     b.Navigation("Product");
-
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

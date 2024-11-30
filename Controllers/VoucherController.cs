@@ -35,7 +35,7 @@ public class VoucherController : ControllerBase
     public async Task<ActionResult<VoucherViewModel>> UseVoucher(string code)
     {
         try {
-            var used = _voucherService.UseVoucherAsync(code);
+            var used = _voucherService.UseVoucherAsync(code); 
             return Ok(new {
                 type = "success",
                 code = 200,

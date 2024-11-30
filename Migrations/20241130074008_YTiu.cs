@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace privaxnet_api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigrations : Migration
+    public partial class YTiu : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -79,12 +79,6 @@ namespace privaxnet_api.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Vouchers_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -96,11 +90,6 @@ namespace privaxnet_api.Migrations
                 name: "IX_Vouchers_ProductId",
                 table: "Vouchers",
                 column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Vouchers_UserId",
-                table: "Vouchers",
-                column: "UserId");
         }
 
         /// <inheritdoc />

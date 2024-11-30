@@ -19,7 +19,6 @@ public class Voucher
     public User Agent { get; set; }
     public Guid AgentId { get; set; }
 
-    public User User { get; set; }
     public Guid UserId { get; set; }
 
     public string RequestPhone { get; set; }

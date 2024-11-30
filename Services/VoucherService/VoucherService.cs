@@ -53,7 +53,7 @@ public class VoucherService : IVoucherService
             if(IsUsed) {
                 voucher.Status = "Inactive";
                 voucher.UsedAt = DateTime.Now.ToUniversalTime();
-                voucher.User = _userService.GetUser();
+                voucher.UserId = _userService.GetId();
                 await _context.SaveChangesAsync();
                 return true;
             }
