@@ -52,7 +52,6 @@ public class VoucherService : IVoucherService
             var IsUsed = await _userService.RechargeAsync(voucher);
             if(IsUsed) {
                 voucher.Status = "Inactive";
-                voucher.UsedAt = DateTime.Now.ToUniversalTime();
                 voucher.UserId = _userService.GetId();
                 await _context.SaveChangesAsync();
                 return true;

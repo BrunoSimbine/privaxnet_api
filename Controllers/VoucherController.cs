@@ -35,12 +35,21 @@ public class VoucherController : ControllerBase
     public async Task<ActionResult<VoucherViewModel>> UseVoucher(string code)
     {
         try {
-            var used = _voucherService.UseVoucherAsync(code); 
-            return Ok(new {
-                type = "success",
-                code = 200,
-                message = "Usado com sucesso"
-            });
+            var used = await _voucherService.UseVoucherAsync(code); 
+            if(used) {
+                return Ok(new {
+                    type = "success",
+                    code = 200,
+                    message = "Usado com sucesso"
+                });
+            }else{
+                return BadRequest(new {
+                    type = "error",
+                    code = 500,
+                    message = "Impossivel recarregar"
+                });
+            }
+
         } catch (VoucherAlreadyUsedException ex) {
             return Conflict(new {
                 type = "error",

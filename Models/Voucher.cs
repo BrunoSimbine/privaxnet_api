@@ -11,7 +11,6 @@ public class Voucher
     public string Status { get; set; } = "Active"; 
 
     public DateTime CreatedAt { get; set; } = DateTime.Now.ToUniversalTime();
-    public DateTime UsedAt { get; set; }
 
     public Product Product { get; set; }
     public Guid ProductId { get; set; }

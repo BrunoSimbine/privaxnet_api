@@ -124,7 +124,7 @@ public class UserService : IUserService
         var Id = GetId();
         var user = await GetUserByIdAsync(Id);
         var pruduct = await _productService.GetProductAsync(voucher.ProductId);
-        user.Expires = DateTime.Now.AddDays(pruduct.DurationDays);
+        user.Expires = DateTime.Now.AddDays(pruduct.DurationDays).ToUniversalTime();
         user.DataAvaliable += pruduct.DataAmount;
         return true;
     }
