@@ -8,10 +8,9 @@ public class DataContext : DbContext
 {
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
-		//var connection = "User ID=bruno;Password=bruno1234;Server=167.235.138.208;Port=32771;Database=testes;";
-		var connection = "User ID=bruno;Password=bruno1234;Server=167.235.138.208;Port=32771;Database=bruno;";
+		//var connection = "User ID=bruno;Password=bruno1234;Server=5.75.139.11;Port=32768;Database=testes;";
+		var connection = "User ID=bruno;Password=bruno1234;Server=5.75.139.11;Port=32768;Database=bruno;";
 		optionsBuilder.UseNpgsql(connection);
-		//optionsBuilder.UseNpgsql(connection);
 	}
 
 	public DbSet<User> Users { get; set; }
