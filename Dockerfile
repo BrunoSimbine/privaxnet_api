@@ -22,4 +22,4 @@ WORKDIR /app
 COPY --from=build /app/out .
 # Uncomment to enable non-root user
 # USER $APP_UID
-ENTRYPOINT ["sh", "-c", "dotnet ef database update && ./privaxnet_api"]
+ENTRYPOINT ["./privaxnet_api"]
