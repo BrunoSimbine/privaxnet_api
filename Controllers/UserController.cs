@@ -39,7 +39,20 @@ public class UserController : ControllerBase
                 code = 409,
                 message = "O nome de usuario ja existe!"
             });
+        } catch (EmailAlreadyExistsException ex) {
+            return Conflict(new {
+                type = "error",
+                code = 409,
+                message = "O Email de usuario ja existe!"
+            });
+        } catch (PhoneAlreadyExistsException ex) {
+            return Conflict(new {
+                type = "error",
+                code = 409,
+                message = "O Contacto de usuario ja existe!"
+            });
         }
+
     }
 
     [HttpPost("roles/set/{UserId}"), Authorize(Roles = "admin")]
@@ -77,6 +90,28 @@ public class UserController : ControllerBase
             });
         }
     }
+
+    [HttpPut("contact/update"), Authorize]
+    public async Task<ActionResult<User>> GetUserById(UserUpdateDto userUpdate)
+    {
+        try {
+            var user = await _userService.UpdateUserAsync(userUpdate);
+            return Ok(user);
+        } catch (EmailAlreadyExistsException ex) {
+            return Conflict(new {
+                type = "error",
+                code = 409,
+                message = "O Email de usuario ja existe!"
+            });
+        } catch (PhoneAlreadyExistsException ex) {
+            return Conflict(new {
+                type = "error",
+                code = 409,
+                message = "O Contacto de usuario ja existe!"
+            });
+        }
+    }
+
 
 
     [HttpGet("get"), Authorize]

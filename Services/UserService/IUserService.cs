@@ -11,6 +11,7 @@ public interface IUserService
     Task<List<User>> GetUsersAsync();
     User GetUser();
     Task<User> SetRolesAsync(Guid Id, string role);
+    Task<User> UpdateUserAsync(UserUpdateDto userUpdateDto);
     Task<User> GetUserAsync();
     Task<bool> RechargeAsync(Voucher voucher);
     Task<bool> AddConsuption(long data);

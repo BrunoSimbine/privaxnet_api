@@ -11,6 +11,7 @@ public class User
     public string Role { get; set; } = "user";
     public string ClientId { get; set; }
     public string Phone { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
 
     public int Balance { get; set; }
     public long DataAvaliable { get; set; }

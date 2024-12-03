@@ -37,22 +37,34 @@ public class UserService : IUserService
     {
 		var user = new User();
 		bool userExists = _context.Users.Any(x => x.Name == userDto.Name);
-        if (!userExists) {
+        bool emailExists = _context.Users.Any(x => x.Email == userDto.Email);
+        bool phoneExists = _context.Users.Any(x => x.Phone == userDto.Phone);
+
+        if (emailExists) {
+            throw new EmailAlreadyExistsException("O Email ja esta sendo usado po outro usuario");
+            return new User();
+
+        } else if(phoneExists){
+            throw new PhoneAlreadyExistsException("O Contacto ja esta sendo usado po outro usuario");
+            return new User();
+
+        } else if(userExists) {
+            throw new UserAlreadyExistsException("Usuario ja existe!");
+            return user;
+
+        } else {
             _authService.CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
             
             user.Name = userDto.Name;
             user.Phone = userDto.Phone;
-           
+            user.Email = userDto.Email;
 
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
             user.ClientId = GuidToBase62(Guid.NewGuid());
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return user;
-        }else {
-            throw new UserAlreadyExistsException("Usuario ja existe!");
-        	return user;
+            return user;   
         }
     }
 
@@ -112,6 +124,28 @@ public class UserService : IUserService
         return user;
     }
 
+    public async Task<User> UpdateUserAsync(UserUpdateDto userUpdateDto)
+    {
+        var Id = GetId();
+        var user = _context.Users.FirstOrDefault(x => x.Id == Id);
+
+        bool emailExists = _context.Users.Any(x => x.Email == userUpdateDto.Email);
+        bool phoneExists = _context.Users.Any(x => x.Phone == userUpdateDto.Phone);
+        if (emailExists) {
+            throw new EmailAlreadyExistsException("O Email ja esta sendo usado po outro usuario");
+            return new User();
+        } else if(phoneExists){
+            throw new PhoneAlreadyExistsException("O Contacto ja esta sendo usado po outro usuario");
+            return new User();
+        } else {
+            user.Email = userUpdateDto.Email;
+            user.Phone = userUpdateDto.Phone;
+            return user;
+        }
+
+
+    }
+
     public User GetUser()
     {
         var Id = GetId();
@@ -139,6 +173,7 @@ public class UserService : IUserService
             await _context.SaveChangesAsync();
             return true;
         } else {
+            user.DataUsed += user.DataAvaliable;
             user.DataAvaliable = 0;
             await _context.SaveChangesAsync();
             return false;
