@@ -140,6 +140,7 @@ public class UserService : IUserService
         } else {
             user.Email = userUpdateDto.Email;
             user.Phone = userUpdateDto.Phone;
+            await _context.SaveChangesAsync();
             return user;
         }
 
