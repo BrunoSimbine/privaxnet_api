@@ -3,6 +3,7 @@ using privaxnet_api.Services.AuthService;
 using privaxnet_api.Services.UserService;
 using privaxnet_api.Services.ProductService;
 using privaxnet_api.Services.VoucherService;
+using privaxnet_api.Services.MessageService;
 using privaxnet_api.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,10 @@ builder.Services.AddCors(options => {
                 .AllowAnyMethod()
                 .AllowAnyHeader();
     });
+});
+
+builder.Services.AddHttpClient("WhatsappClient", client => {
+    client.BaseAddress = new Uri("https://whatsapp.api.privaxnet.com/");
 });
 
 builder.Services.AddHttpContextAccessor();
@@ -63,6 +68,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IVoucherService, VoucherService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 
 
 builder.WebHost.ConfigureKestrel(options =>

@@ -78,5 +78,22 @@ public class ProductService : IProductService
         }
     }
 
+
+    public async Task<Product> GetDefaultProductAsync()
+    {
+
+        var product = new Product();
+        bool productExists = _context.Products.Any(x => x.Name == "Welcome");
+
+        if (productExists) {
+            product = await _context.Products.FirstOrDefaultAsync(x => x.Name == "Welcome");
+            return product;
+        }else{
+            throw new ProductNotFoundException("Produto nao encontrado");
+            return new Product();
+        }
+    }
+
+
 }
 

@@ -51,6 +51,18 @@ public class UserController : ControllerBase
                 code = 409,
                 message = "O Contacto de usuario ja existe!"
             });
+        } catch (InvalidWhatsAppPhoneException ex) {
+            return BadRequest(new {
+                type = "error",
+                code = 400,
+                message = "Contacto de whatsapp invalido!"
+            });
+        } catch (ProductNotFoundException ex) {
+            return BadRequest(new {
+                type = "error",
+                code = 400,
+                message = "Produto de boas vindas nao encontrado!"
+            });
         }
 
     }
@@ -108,6 +120,12 @@ public class UserController : ControllerBase
                 type = "error",
                 code = 409,
                 message = "O Contacto de usuario ja existe!"
+            });
+        } catch (InvalidWhatsAppPhoneException ex) {
+            return BadRequest(new {
+                type = "error",
+                code = 400,
+                message = "Contacto de whatsapp invalido!"
             });
         }
     }

@@ -6,6 +6,9 @@ using privaxnet_api.Data;
 using privaxnet_api.Models;
 using privaxnet_api.Exceptions;
 using privaxnet_api.Services.VoucherService;
+using privaxnet_api.Services.UserService;
+using privaxnet_api.Services.ProductService;
+using privaxnet_api.Services.MessageService;
 using Microsoft.AspNetCore.Authorization;
 
 
@@ -17,18 +20,41 @@ namespace privaxnet_api.Controllers;
 public class VoucherController : ControllerBase
 {
     private readonly IVoucherService _voucherService;
+    private readonly IProductService _productService;
+    private readonly IMessageService _messageService;
 
 
-    public VoucherController(IVoucherService voucherService)
+
+    public VoucherController(IVoucherService voucherService, IProductService productService, IMessageService messageService)
     {
         _voucherService = voucherService;
+        _productService = productService;
+        _messageService = messageService;
+
     }
 
     [HttpPost("register"), Authorize(Roles = "admin")]
     public async Task<ActionResult<VoucherViewModel>> CreateVoucher(VoucherDto voucherDto)
     {
-        var voucher = await _voucherService.CreateVoucherAsync(voucherDto);
-        return Ok(voucher);
+        try {
+            var voucher = await _voucherService.CreateVoucherAsync(voucherDto);
+            var product = await _productService.GetProductAsync(voucherDto.ProductId);
+
+            var messageVoucher = new MessageVoucher {
+                Code = voucher.Code,
+                ProductName = product.Name,
+                ProductPrice = product.Price,
+                DurationDays = product.DurationDays,
+                DataAmount = product.DataAmount,
+                RequestPhone = voucherDto.RequestPhone
+            };
+
+            var resultVoucher = await _messageService.SendVoucherAsync(messageVoucher);
+            return Ok(voucher);
+        } catch(HttpRequestException ex) {
+                return BadRequest("Numero de whatsapp Invalido!");
+            }
+
     }
 
     [HttpPost("use/{code}"), Authorize]

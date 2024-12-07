@@ -14,7 +14,7 @@ public class User
     public string Email { get; set; } = string.Empty;
 
     public int Balance { get; set; }
-    public long DataAvaliable { get; set; }
+    public long DataAvaliable { get; set; } = 262144;
     public long DataUsed { get; set; } 
     public DateTime Expires { get; set; } = DateTime.Now.ToUniversalTime();
 

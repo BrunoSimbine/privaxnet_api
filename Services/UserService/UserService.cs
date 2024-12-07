@@ -6,6 +6,8 @@ using privaxnet_api.Data;
 using privaxnet_api.Exceptions;
 using privaxnet_api.Services.AuthService;
 using privaxnet_api.Services.ProductService;
+using privaxnet_api.Services.MessageService;
+using privaxnet_api.Services.VoucherService;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Text;
@@ -18,9 +20,11 @@ public class UserService : IUserService
 	private readonly DataContext _context;
     private readonly IAuthService _authService;
     private readonly IProductService _productService;
+    private readonly IMessageService _messageService;
 
-    public UserService(IHttpContextAccessor accessor, DataContext context, IAuthService authService, IProductService productService)
+    public UserService(IHttpContextAccessor accessor, DataContext context, IAuthService authService, IProductService productService, IMessageService messageService)
     {
+        _messageService = messageService;
         _accessor = accessor;
         _authService = authService;
         _context = context;
@@ -53,25 +57,69 @@ public class UserService : IUserService
             return user;
 
         } else {
-            _authService.CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
-            
-            user.Name = userDto.Name;
-            user.Phone = userDto.Phone;
-            user.Email = userDto.Email;
 
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
-            user.ClientId = GuidToBase62(Guid.NewGuid());
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return user;   
+            try {
+                _authService.CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
+                user.Name = userDto.Name;
+                user.Phone = userDto.Phone;
+                user.Email = userDto.Email;
+
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+                user.ClientId = GuidToBase62(Guid.NewGuid());
+
+                
+                var messageUser = new MessageUser {
+                    Name = userDto.Name,
+                    Phone = userDto.Phone,
+                    Email = userDto.Email
+                };
+                
+
+                var resultWelcome = await _messageService.SendWelcomeAsync(messageUser);
+
+   
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                /*
+
+                var product = await _productService.GetDefaultProductAsync();
+                var voucherDto = new VoucherDto {
+                    ProductId = product.Id,
+                    RequestPhone = userDto.Phone 
+                };
+
+                
+                var voucher = await _voucherService.CreateVoucherAsync(voucherDto);
+                
+                var messageVoucher = new MessageVoucher {
+                    Id = voucher.Id,
+                    Code = voucher.Code,
+                    ProductName = product.Name,
+                    ProductPrice = product.Price,
+                    DurationDays = product.DurationDays,
+                    DataAmount = product.DataAmount,
+                    UserName = user.Name,
+                    RequestPhone = userDto.Phone,
+                };
+
+                var resultVoucher = _messageService.SendVoucherAsync(messageVoucher);
+                */
+                return user;
+            } catch(HttpRequestException ex) {
+                throw new InvalidWhatsAppPhoneException("Numero de whatsapp invalido!");
+                return new User();
+            }
+            
         }
     }
 
     public async Task<List<User>> GetUsersAsync()
     {
         var users = await _context.Users.ToListAsync();
-        return users;
+        return users; // Amizade2020.z
 
     }
 
@@ -127,7 +175,7 @@ public class UserService : IUserService
     public async Task<User> UpdateUserAsync(UserUpdateDto userUpdateDto)
     {
         var Id = GetId();
-        var user = _context.Users.FirstOrDefault(x => x.Id == Id);
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
 
         bool emailExists = _context.Users.Any(x => x.Email == userUpdateDto.Email);
         bool phoneExists = _context.Users.Any(x => x.Phone == userUpdateDto.Phone);
@@ -138,10 +186,24 @@ public class UserService : IUserService
             throw new PhoneAlreadyExistsException("O Contacto ja esta sendo usado po outro usuario");
             return new User();
         } else {
-            user.Email = userUpdateDto.Email;
-            user.Phone = userUpdateDto.Phone;
-            await _context.SaveChangesAsync();
-            return user;
+            try {
+
+                var messageUser = new MessageUser {
+                    Name = user.Name,
+                    Phone = userUpdateDto.Phone,
+                    Email = userUpdateDto.Email
+                };
+
+                var result = await _messageService.SendWelcomeAsync(messageUser);
+                user.Email = userUpdateDto.Email;
+                user.Phone = userUpdateDto.Phone;
+                await _context.SaveChangesAsync();
+                return user;
+            } catch (HttpRequestException ex) {
+                throw new InvalidWhatsAppPhoneException("Numero de whatsapp invalido!");
+                return new User();
+            }
+
         }
 
 

@@ -9,5 +9,6 @@ public interface IProductService
     Task<Product> CreateProductAsync(ProductDto productDto);
     Task<List<Product>> GetProducts();
     Product GetProduct(Guid Id);
+    Task<Product> GetDefaultProductAsync();
     Task<Product> GetProductAsync(Guid Id);
 }
