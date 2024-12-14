@@ -7,7 +7,7 @@ public class User : BaseEntity
 {
     public string Name { get; set; }
     public string Status { get; set; } = "Active";
-    public string Role { get; set; } = "admin";
+    public string Role { get; set; } = "user";
     public string ClientId { get; set; }
     public string Phone { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
