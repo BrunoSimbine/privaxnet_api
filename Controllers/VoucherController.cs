@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace privaxnet_api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("v1/[controller]")]
 public class VoucherController : ControllerBase
 {
     private readonly IVoucherService _voucherService;
@@ -33,45 +33,76 @@ public class VoucherController : ControllerBase
 
     }
 
-    [HttpPost("register"), Authorize(Roles = "admin")]
-    public async Task<ActionResult<VoucherViewModel>> CreateVoucher(VoucherDto voucherDto)
+    [HttpPost("create"), Authorize]
+    public async Task<ActionResult<VoucherViewModel>> CreateMyVoucher([FromQuery] Guid ProductId)
     {
         try {
-            var voucher = await _voucherService.CreateVoucherAsync(voucherDto);
-            var product = await _productService.GetProductAsync(voucherDto.ProductId);
+            var voucher = await _voucherService.CreateVoucherAsync(ProductId);
 
-            var messageVoucher = new MessageVoucher {
-                Code = voucher.Code,
-                ProductName = product.Name,
-                ProductPrice = product.Price,
-                DurationDays = product.DurationDays,
-                DataAmount = product.DataAmount,
-                RequestPhone = voucherDto.RequestPhone
-            };
-
-            var resultVoucher = await _messageService.SendVoucherAsync(messageVoucher);
             return Ok(voucher);
         } catch(HttpRequestException ex) {
                 return BadRequest("Numero de whatsapp Invalido!");
-            }
-
+        } catch(InsuficientBalanceException ex) {
+                return BadRequest("Nao tem saldo suficiente pra fazer a compra!");
+        }
     }
 
-    [HttpPost("use/{code}"), Authorize]
+
+    [HttpPost("create/{ClientId}"), Authorize]
+    public async Task<ActionResult<VoucherViewModel>> CreateVoucher(VoucherDto voucherDto, string ClientId)
+    {
+        try {
+            var voucher = await _voucherService.CreateVoucherAsync(voucherDto);
+
+            return Ok(voucher);
+        } catch(HttpRequestException ex) {
+                return BadRequest("Numero de whatsapp Invalido!");
+        } catch(InsuficientBalanceException ex) {
+                return BadRequest("Nao tem saldo suficiente pra fazer a compra!");
+        }
+    }
+
+    [HttpGet("get"), Authorize]
+    public async Task<ActionResult<VoucherViewModel>> GetVokjucher(Guid Id)
+    {
+        return Ok("");
+    }
+
+    [HttpGet("get/{Id}"), Authorize]
+    public async Task<ActionResult<VoucherViewModel>> GetVoucher(Guid Id)
+    {
+        try {
+            var voucher = await _voucherService.GetVoucherAsync(Id);
+            return Ok(voucher);
+        }catch (VoucherNotFoundException ex) {
+            return NotFound(new {
+                type = "error",
+                code = 404,
+                message = "Voucher nao encontrado!!"
+            });
+        }
+    }
+
+    [HttpGet("all"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<List<VoucherViewModel>>> GetVouchers()
+    {
+        var vouchers = await _voucherService.GetVouchersAsync();
+        return Ok(vouchers);
+    }
+
+
+
+    [HttpPut("claim/{code}"), Authorize]
     public async Task<ActionResult<VoucherViewModel>> UseVoucher(string code)
     {
         try {
-            var used = await _voucherService.UseVoucherAsync(code); 
-            if(used) {
-                return Ok(new {
-                    type = "success",
-                    code = 200,
-                    message = "Usado com sucesso"
-                });
+            var user = await _voucherService.UseVoucherAsync(code); 
+            if(user != null) {
+                return Ok(user);
             }else{
                 return BadRequest(new {
                     type = "error",
-                    code = 500,
+                    code = 400,
                     message = "Impossivel recarregar"
                 });
             }
@@ -92,25 +123,5 @@ public class VoucherController : ControllerBase
         }
     }
 
-    [HttpGet("all"), Authorize(Roles = "admin")]
-    public async Task<ActionResult<List<VoucherViewModel>>> GetVouchers()
-    {
-        var vouchers = await _voucherService.GetVouchersAsync();
-        return Ok(vouchers);
-    }
 
-    [HttpPost("get/{Id}"), Authorize]
-    public async Task<ActionResult<VoucherViewModel>> GetVoucher(Guid Id)
-    {
-        try {
-            var voucher = _voucherService.GetVoucherAsync(Id);
-            return Ok(voucher);
-        }catch (VoucherNotFoundException ex) {
-            return NotFound(new {
-                type = "error",
-                code = 404,
-                message = "Voucher nao encontrado!!"
-            });
-        }
-    }
 }

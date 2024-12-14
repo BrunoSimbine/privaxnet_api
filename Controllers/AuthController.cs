@@ -19,7 +19,7 @@ using System.Security.Cryptography;
 namespace privaxnet_api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("v1/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -43,6 +43,18 @@ public class AuthController : ControllerBase
                 message = "Nome de usuario ou senha invalido!"
             });
         }
+    }
+
+    [HttpPut("refresh"), Authorize]
+    public async Task<ActionResult<SessionViewModel>> GsdetoiyToken(SessionDto sessionDto)
+    {
+        return Ok("A caminho");
+    }
+
+    [HttpDelete("logout"), Authorize]
+    public async Task<ActionResult<SessionViewModel>> GsdetToken(SessionDto sessionDto)
+    {
+        return Ok("A caminho");
     }
 
 }

@@ -4,6 +4,18 @@ using privaxnet_api.Services.UserService;
 using privaxnet_api.Services.ProductService;
 using privaxnet_api.Services.VoucherService;
 using privaxnet_api.Services.MessageService;
+using privaxnet_api.Services.CurrencyService;
+using privaxnet_api.Services.WalletService;
+using privaxnet_api.Services.PayAgentService;
+using privaxnet_api.Services.PaymentService;
+using privaxnet_api.Repository.UserRepository;
+using privaxnet_api.Repository.ProductRepository;
+using privaxnet_api.Repository.MessageRepository;
+using privaxnet_api.Repository.VoucherRepository;
+using privaxnet_api.Repository.CurrencyRepository;
+using privaxnet_api.Repository.WalletRepository;
+using privaxnet_api.Repository.PayAgentRepository;
+using privaxnet_api.Repository.PaymentRepository;
 using privaxnet_api.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -69,7 +81,18 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IVoucherService, VoucherService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
-
+builder.Services.AddScoped<ICurrencyService, CurrencyService>();
+builder.Services.AddScoped<IWalletService, WalletService>();
+builder.Services.AddScoped<IPayAgentService, PayAgentService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IVoucherRepository, VoucherRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+builder.Services.AddScoped<IWalletRepository, WalletRepository>();
+builder.Services.AddScoped<IPayAgentRepository, PayAgentRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {

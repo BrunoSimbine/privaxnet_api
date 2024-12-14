@@ -18,7 +18,7 @@ using System.Text;
 namespace privaxnet_api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("v1/[controller]")]
 public class UserController : ControllerBase
 {    
     private readonly IUserService _userService;
@@ -67,25 +67,19 @@ public class UserController : ControllerBase
 
     }
 
-    [HttpPost("roles/set/{UserId}"), Authorize(Roles = "admin")]
-    public async Task<ActionResult<UserViewModel>> SetPermission([FromQuery] string Roles, Guid UserId)
+    [HttpGet("get"), Authorize]
+    public async Task<ActionResult<User>> GetUser()
     {
         try {
-            var user = await _userService.SetRolesAsync(UserId, Roles);
+            var user = await _userService.GetUserAsync();
             return Ok(user);
         } catch (UserNotFoundException ex) {
             return NotFound(new {
                 type = "error",
-                code = 409,
-                message = "O nome de usuario ja existe!"
-            });
+                code = 404,
+                message = "Usuario nao encontrado!"
+            }); 
         }
-    }
-    [HttpGet("all"), Authorize(Roles = "admin")]
-    public async Task<ActionResult<List<UserViewModel>>> GetUsers()
-    {
-        var users = await _userService.GetUsersAsync();
-        return Ok(users);
     }
 
     [HttpGet("get/{Id}"), Authorize(Roles = "admin")]
@@ -103,7 +97,39 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpPut("contact/update"), Authorize]
+    [HttpGet("all"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<List<UserViewModel>>> GetUsers()
+    {
+        var users = await _userService.GetUsersAsync();
+        return Ok(users);
+    }
+
+
+    [HttpPut("upgrade/roles/{UserId}"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<UserViewModel>> SetPermission([FromQuery] string Roles, Guid UserId)
+    {
+        try {
+            var user = await _userService.SetRolesAsync(UserId, Roles);
+            return Ok(user);
+        } catch (UserNotFoundException ex) {
+            return NotFound(new {
+                type = "error",
+                code = 409,
+                message = "O nome de usuario ja existe!"
+            });
+        }
+    }
+
+    [HttpPut("downgrade/roles/{UserId}"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<UserViewModel>> SetPermisdfvssion([FromQuery] string Roles, Guid UserId)
+    {
+        return Ok("dsfik");
+    }
+
+
+
+
+    [HttpPut("update/contact"), Authorize]
     public async Task<ActionResult<User>> GetUserById(UserUpdateDto userUpdate)
     {
         try {
@@ -130,13 +156,27 @@ public class UserController : ControllerBase
         }
     }
 
+    [HttpPut("update/email"), Authorize]
+    public async Task<ActionResult<User>> GetUsersgerById(UserUpdateDto userUpdate)
+    {
+        return Ok("sd");
+    }
 
 
-    [HttpGet("get"), Authorize]
-    public async Task<ActionResult<User>> GetUser()
+    [HttpPut("update/phone"), Authorize]
+    public async Task<ActionResult<User>> GetUsersgerdfbfById(UserUpdateDto userUpdate)
+    {
+        return Ok("sd");
+    }
+
+
+
+
+    [HttpPut("update/balance"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<User>> AddBalance([FromQuery] decimal balance)
     {
         try {
-            var user = await _userService.GetUserAsync();
+            var user = await _userService.AddBalanceAsync(balance);
             return Ok(user);
         } catch (UserNotFoundException ex) {
             return NotFound(new {
@@ -147,20 +187,29 @@ public class UserController : ControllerBase
         }
     }
                                                                                            
-    [HttpGet("consuption/{data}"), Authorize]
-    public async Task<ActionResult<User>> AddConsuption(long data)
+
+
+    [HttpPut("update/data/{data}"), Authorize]
+    public async Task<ActionResult<User>> AddConseghuption(long data)
     {
-        var consuption = await _userService.AddConsuption(data);
-        if(consuption){
-            return Ok(new {
-                type = "success",
-                code = 200,
-                message = "Consumido com sucesso!"
-            });
-        }else{
+        try {
+            var user = await _userService.AddConsuption(data);
+            return Ok(user);
+        } catch (InsuficientDataException ex) {
             return Forbid();
         }
-        return Ok(consuption);
+    }
+
+    [HttpDelete("delete"), Authorize]
+    public async Task<ActionResult<User>> UserDelete(long data)
+    {
+        return Ok("Ola MundoQ");
+    }
+
+    [HttpDelete("delete/{Id}"), Authorize]
+    public async Task<ActionResult<User>> AddConsuption(long data)
+    {
+        return Ok("sf");
     }
 
 }

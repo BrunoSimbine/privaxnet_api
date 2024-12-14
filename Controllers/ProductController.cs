@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace privaxnet_api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("v1/[controller]")]
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
@@ -45,7 +45,7 @@ public class ProductController : ControllerBase
         return Ok(products);
     }
 
-    [HttpPost("get/{Id}"), Authorize]
+    [HttpGet("get/{Id}"), Authorize]
     public async Task<ActionResult<ProductViewModel>> GetProduct(Guid Id)
     {
         try {
@@ -59,5 +59,23 @@ public class ProductController : ControllerBase
             });
         }
 
+    }
+
+    [HttpGet("get"), Authorize]
+    public async Task<ActionResult<ProductViewModel>> GetPrereoduct(Guid Id)
+    {
+        return Ok("djshd");
+    }
+
+    [HttpPut("update"), Authorize]
+    public async Task<ActionResult<ProductViewModel>> GetPreruyeoduct(Guid Id)
+    {
+        return Ok("sfd");
+    }
+
+    [HttpDelete("delete/{Id}"), Authorize]
+    public async Task<ActionResult<ProductViewModel>> GetPrereodusdct(Guid Id)
+    {
+        return Ok("sfd");
     }
 }

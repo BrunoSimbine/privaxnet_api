@@ -5,9 +5,10 @@ using privaxnet_api.Models;
 using privaxnet_api.Data;
 using privaxnet_api.Exceptions;
 using privaxnet_api.Services.AuthService;
-using privaxnet_api.Services.ProductService;
-using privaxnet_api.Services.MessageService;
+using privaxnet_api.Repository.ProductRepository;
+using privaxnet_api.Repository.MessageRepository;
 using privaxnet_api.Services.VoucherService;
+using privaxnet_api.Repository.UserRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Text;
@@ -16,33 +17,25 @@ namespace privaxnet_api.Services.UserService;
 
 public class UserService : IUserService
 {
-    private readonly IHttpContextAccessor _accessor;
 	private readonly DataContext _context;
     private readonly IAuthService _authService;
-    private readonly IProductService _productService;
-    private readonly IMessageService _messageService;
+    private readonly IProductRepository _productRepository;
+    private readonly IMessageRepository _messageRepository;
+    private readonly IUserRepository _userRepository;
 
-    public UserService(IHttpContextAccessor accessor, DataContext context, IAuthService authService, IProductService productService, IMessageService messageService)
+    public UserService(DataContext context, IAuthService authService, IProductRepository productRepository, IMessageRepository messageRepository, IUserRepository userRepository)
     {
-        _messageService = messageService;
-        _accessor = accessor;
+        _messageRepository = messageRepository;
+        _userRepository = userRepository;
         _authService = authService;
-        _context = context;
-        _productService = productService;
-    }
-
-    public Guid GetId()
-    {
-        var id = _accessor.HttpContext?.User.FindFirstValue(ClaimTypes.Sid);
-        return Guid.Parse(id);
+        _productRepository = productRepository;
     }
 
     public async Task<User> CreateUserAsync(UserDto userDto)
     {
-		var user = new User();
-		bool userExists = _context.Users.Any(x => x.Name == userDto.Name);
-        bool emailExists = _context.Users.Any(x => x.Email == userDto.Email);
-        bool phoneExists = _context.Users.Any(x => x.Phone == userDto.Phone);
+        bool nameExists = _userRepository.NameExists(userDto.Name);
+        bool emailExists = _userRepository.EmailExists(userDto.Email);
+        bool phoneExists = _userRepository.PhoneExists(userDto.Phone);
 
         if (emailExists) {
             throw new EmailAlreadyExistsException("O Email ja esta sendo usado po outro usuario");
@@ -52,23 +45,15 @@ public class UserService : IUserService
             throw new PhoneAlreadyExistsException("O Contacto ja esta sendo usado po outro usuario");
             return new User();
 
-        } else if(userExists) {
+        } else if(nameExists) {
             throw new UserAlreadyExistsException("Usuario ja existe!");
-            return user;
+            return new User();
 
         } else {
 
             try {
-                _authService.CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
-                user.Name = userDto.Name;
-                user.Phone = userDto.Phone;
-                user.Email = userDto.Email;
 
-                user.PasswordHash = passwordHash;
-                user.PasswordSalt = passwordSalt;
-                user.ClientId = GuidToBase62(Guid.NewGuid());
-
-                
+                var user = await _userRepository.CreateUserAsync(userDto);
                 var messageUser = new MessageUser {
                     Name = userDto.Name,
                     Phone = userDto.Phone,
@@ -76,75 +61,42 @@ public class UserService : IUserService
                 };
                 
 
-                var resultWelcome = await _messageService.SendWelcomeAsync(messageUser);
-
-   
-
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-
-                /*
-
-                var product = await _productService.GetDefaultProductAsync();
-                var voucherDto = new VoucherDto {
-                    ProductId = product.Id,
-                    RequestPhone = userDto.Phone 
-                };
-
-                
-                var voucher = await _voucherService.CreateVoucherAsync(voucherDto);
-                
-                var messageVoucher = new MessageVoucher {
-                    Id = voucher.Id,
-                    Code = voucher.Code,
-                    ProductName = product.Name,
-                    ProductPrice = product.Price,
-                    DurationDays = product.DurationDays,
-                    DataAmount = product.DataAmount,
-                    UserName = user.Name,
-                    RequestPhone = userDto.Phone,
-                };
-
-                var resultVoucher = _messageService.SendVoucherAsync(messageVoucher);
-                */
+                var resultWelcome = await _messageRepository.SendWelcomeAsync(messageUser);
                 return user;
-            } catch(HttpRequestException ex) {
+            } catch (HttpRequestException ex) {
+
                 throw new InvalidWhatsAppPhoneException("Numero de whatsapp invalido!");
                 return new User();
             }
-            
-        }
+        } 
     }
 
     public async Task<List<User>> GetUsersAsync()
     {
-        var users = await _context.Users.ToListAsync();
-        return users; // Amizade2020.z
-
+        return await _userRepository.GetUsersAsync();
     }
 
 
     public async Task<User> GetUserByIdAsync(Guid Id)
     {
-    	var user = new User();
-        bool userExists = _context.Users.Any(x => x.Id == Id);
-        if (userExists) {
-            user = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+        bool userExists = _userRepository.UserExists(Id);
+        if(userExists)
+        {
+            var user = await _userRepository.GetUserByIdAsync(Id);
             return user;
-        }else{
-        	throw new UserNotFoundException("Usuario nao encontrado!");
-        	return user;
+        } else {
+            throw new UserNotFoundException("Usiario nao encontrado!");
+            return new User();
         }
+
     }
 
-    public async Task<User> SetRolesAsync(Guid Id, string role)
+    public async Task<User> SetRolesAsync(Guid Id, string Role)
     {
         var user = new User();
-        bool userExists = _context.Users.Any(x => x.Id == Id);
+        bool userExists = _userRepository.UserExists(Id);
         if (userExists) {
-            user = _context.Users.FirstOrDefault(x => x.Id == Id);
-            user.Role = role;
-            await _context.SaveChangesAsync();
+            user = await _userRepository.SetRolesAsync(Id, Role);
             return user;
         }else{
             throw new UserNotFoundException("Usuario nao encontrado!");
@@ -155,9 +107,9 @@ public class UserService : IUserService
     public User GetUserById(Guid Id)
     {
         var user = new User();
-        bool userExists = _context.Users.Any(x => x.Id == Id);
+        bool userExists = _userRepository.UserExists(Id);
         if (userExists) {
-            user = _context.Users.FirstOrDefault(x => x.Id == Id);
+            user = _userRepository.GetUserById(Id);
             return user;
         }else{
             throw new UserNotFoundException("Usuario nao encontrado!");
@@ -167,18 +119,16 @@ public class UserService : IUserService
 
     public async Task<User> GetUserAsync()
     {
-        var Id = GetId();
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
-        return user;
+        return await _userRepository.GetUserAsync();
     }
 
     public async Task<User> UpdateUserAsync(UserUpdateDto userUpdateDto)
     {
-        var Id = GetId();
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+        var Id = _userRepository.GetId();
+        var user = await _userRepository.GetUserByIdAsync(Id);
 
-        bool emailExists = _context.Users.Any(x => x.Email == userUpdateDto.Email);
-        bool phoneExists = _context.Users.Any(x => x.Phone == userUpdateDto.Phone);
+        bool emailExists = _userRepository.EmailExists(userUpdateDto.Email);
+        bool phoneExists = _userRepository.PhoneExists(userUpdateDto.Phone);
         if (emailExists) {
             throw new EmailAlreadyExistsException("O Email ja esta sendo usado po outro usuario");
             return new User();
@@ -194,7 +144,7 @@ public class UserService : IUserService
                     Email = userUpdateDto.Email
                 };
 
-                var result = await _messageService.SendWelcomeAsync(messageUser);
+                var result = await _messageRepository.SendWelcomeAsync(messageUser);
                 user.Email = userUpdateDto.Email;
                 user.Phone = userUpdateDto.Phone;
                 await _context.SaveChangesAsync();
@@ -205,62 +155,51 @@ public class UserService : IUserService
             }
 
         }
-
-
+        return await _userRepository.UpdateUserAsync(userUpdateDto);
     }
 
     public User GetUser()
     {
-        var Id = GetId();
-        var user = _context.Users.FirstOrDefault(x => x.Id == Id);
-        return user;
+        return _userRepository.GetUser();
     }
 
     public async Task<bool> RechargeAsync(Voucher voucher)
     {
-        var Id = GetId();
-        var user = await GetUserByIdAsync(Id);
-        var pruduct = await _productService.GetProductAsync(voucher.ProductId);
-        user.Expires = DateTime.Now.AddDays(pruduct.DurationDays).ToUniversalTime();
-        user.DataAvaliable += pruduct.DataAmount;
+        var Id = _userRepository.GetId();
+        var user = _userRepository.GetUserById(Id);
+
+        var pruduct = _productRepository.GetProduct(voucher.ProductId);
+        user.ExpirationDate = DateTime.Now.AddDays(pruduct.DurationDays);
+        user.DataAvailable += pruduct.DataAmount;
+
+        await _userRepository.SaveChangesAsync();
         return true;
     }
 
-    public async Task<bool> AddConsuption(long data) 
+    public async Task<User> AddConsuption(long data) 
     {
-        var id = GetId();
-        var user = await GetUserByIdAsync(id);
-        if (user.DataAvaliable >= data) {
-            user.DataAvaliable -= data;
+        var user = _userRepository.GetUser();
+        if (user.DataAvailable >= data) {
+            user.DataAvailable -= data;
             user.DataUsed += data;
-            await _context.SaveChangesAsync();
-            return true;
+            await _userRepository.SaveChangesAsync();
+            return user;
         } else {
-            user.DataUsed += user.DataAvaliable;
-            user.DataAvaliable = 0;
-            await _context.SaveChangesAsync();
-            return false;
+            user.DataUsed += user.DataAvailable;
+            user.DataAvailable = 0;
+            await _userRepository.SaveChangesAsync();
+            throw new InsuficientDataException("Dados nao suficientes");
+            return user;
         }
-
     }
 
-
-    private string GuidToBase62(Guid guid) {
-        var base62Chars = "0123456789abcdefghijklmnopqestuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        byte[] bytes = guid.ToByteArray();
-        long number = BitConverter.ToInt64(bytes, 0);
-
-        if (number < 0 ) throw new ArgumentOutOfRangeException(nameof(number), "Numero deve ser positivo.");
-
-        var result = new StringBuilder();
-
-        do {
-            int remainder = (int)(number % 62);
-            result.Insert(0, base62Chars[remainder]);
-            number /= 62;
-        } while (number > 0);
-
-        return result.ToString().Substring(1, 7);
+    public async Task<User> AddBalanceAsync(decimal balance) 
+    {
+        var user = _userRepository.GetUser();
+        user.Balance += balance;
+        await _userRepository.SaveChangesAsync();
+        return user;
     }
+
 }
 

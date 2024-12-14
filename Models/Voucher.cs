@@ -4,13 +4,11 @@ using System.Text.Json.Serialization;
 namespace privaxnet_api.Models;
 
 
-public class Voucher
+public class Voucher: BaseEntity
 {
     public Guid Id { get; set; }
     public string Code { get; set; }
-    public string Status { get; set; } = "Active"; 
-
-    public DateTime CreatedAt { get; set; } = DateTime.Now.ToUniversalTime();
+    public bool IsUsed { get; set; } = false; 
 
     public Product Product { get; set; }
     public Guid ProductId { get; set; }
