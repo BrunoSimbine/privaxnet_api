@@ -57,11 +57,11 @@ public class UserController : ControllerBase
                 code = 400,
                 message = "Contacto de whatsapp invalido!"
             });
-        } catch (ProductNotFoundException ex) {
+        } catch (Exception ex) {
             return BadRequest(new {
                 type = "error",
                 code = 400,
-                message = "Produto de boas vindas nao encontrado!"
+                message = $"{ex.Message}"
             });
         }
 

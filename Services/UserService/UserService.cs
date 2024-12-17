@@ -52,22 +52,26 @@ public class UserService : IUserService
         } else {
 
             try {
-
-                var user = await _userRepository.CreateUserAsync(userDto);
-                var messageUser = new MessageUser {
+               var messageUser = new MessageUser {
                     Name = userDto.Name,
                     Phone = userDto.Phone,
                     Email = userDto.Email
                 };
-                
 
                 var resultWelcome = await _messageRepository.SendWelcomeAsync(messageUser);
+                var user = await _userRepository.CreateUserAsync(userDto);
+ 
                 return user;
             } catch (HttpRequestException ex) {
 
                 throw new InvalidWhatsAppPhoneException("Numero de whatsapp invalido!");
                 return new User();
+            } catch (Exception ex) {
+
+                throw new Exception(ex.Message);
+                return new User();
             }
+
         } 
     }
 

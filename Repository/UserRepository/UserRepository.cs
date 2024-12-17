@@ -172,7 +172,7 @@ public class UserRepository : IUserRepository
 
 
     private string GuidToBase62(Guid guid) {
-        var base62Chars = "0123456789abcdefghijklmnopqestuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ";
         byte[] bytes = guid.ToByteArray();
         long number = BitConverter.ToInt64(bytes, 0);
 
