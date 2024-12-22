@@ -79,7 +79,17 @@ public class UserController : ControllerBase
                 code = 404,
                 message = "Usuario nao encontrado!"
             }); 
+        } catch (TokenNotValidException ex) {
+            return Unauthorized(new {
+                type = "error",
+                code = 403,
+                message = "Token is not valid!"
+            }); 
         }
+
+
+
+
     }
 
     [HttpGet("get/{Id}"), Authorize(Roles = "admin")]

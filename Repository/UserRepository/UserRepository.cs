@@ -30,6 +30,12 @@ public class UserRepository : IUserRepository
         return Guid.Parse(id);
     }
 
+    public string GetCurrentToken()
+    {
+        var headers = _accessor.HttpContext?.Request.Headers;
+        return headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
+    }
+
 
     public async Task<User> CreateUserAsync(UserDto userDto)
     {
@@ -139,6 +145,14 @@ public class UserRepository : IUserRepository
     {
         var user = await GetUserByIdAsync(userId);
         user.Balance += balance;
+        await _context.SaveChangesAsync();
+        return user;
+    }
+
+    public async Task<User> UpdateToken(Guid userId, string token)
+    {
+        var user = await GetUserByIdAsync(userId);
+        user.Token = token;
         await _context.SaveChangesAsync();
         return user;
     }

@@ -28,4 +28,6 @@ public interface IUserRepository
     DateTime TokenExpires(string token);
     Task SaveChangesAsync();
     Task<User> AddBalanceAsync(Guid userId, decimal balance);
+    Task<User> UpdateToken(Guid userId, string token);
+    string GetCurrentToken();
 }

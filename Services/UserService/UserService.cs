@@ -77,7 +77,8 @@ public class UserService : IUserService
 
     public async Task<List<User>> GetUsersAsync()
     {
-        return await _userRepository.GetUsersAsync();
+        var users = await _userRepository.GetUsersAsync();
+        return users;
     }
 
 
@@ -123,7 +124,14 @@ public class UserService : IUserService
 
     public async Task<User> GetUserAsync()
     {
-        return await _userRepository.GetUserAsync();
+        var token = _userRepository.GetCurrentToken();
+        var user = await _userRepository.GetUserAsync();
+        if (token != user.Token) {
+            throw new TokenNotValidException("Ola Mundo!");
+            return new User();
+        }else{
+            return user;
+        }
     }
 
     public async Task<User> UpdateUserAsync(UserUpdateDto userUpdateDto)
@@ -178,7 +186,7 @@ public class UserService : IUserService
 
         await _userRepository.SaveChangesAsync();
         return true;
-    }
+    } 
 
     public async Task<User> AddConsuption(long data) 
     {

@@ -37,6 +37,7 @@ public class AuthService : IAuthService
                 session.IsValid = isValid;
                 session.Expires = expiration;
                 session.UserId = user.Id;
+                await _userRepository.UpdateToken(user.Id, token);
 
                 return session;
             } else {

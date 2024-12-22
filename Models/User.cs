@@ -6,7 +6,6 @@ namespace privaxnet_api.Models;
 public class User : BaseEntity
 {
     public string Name { get; set; }
-    public string Status { get; set; } = "Active";
     public string Role { get; set; } = "user";
     public string ClientId { get; set; }
     public string Phone { get; set; } = string.Empty;
@@ -15,7 +14,22 @@ public class User : BaseEntity
     public decimal Balance { get; set; }
     public long DataAvailable { get; set; } = 262144;
     public long DataUsed { get; set; } 
-    public DateTime ExpirationDate { get; set; }
+    public DateTime ExpirationDate { get; set; } = DateTime.Now;
+    public bool IsBlocked
+    {
+        get
+        {
+            return DateDeleted.HasValue && DateDeleted.Value > DateTime.Now;
+        }
+    }
+
+    public bool IsExpired
+    {
+        get
+        {
+            return ExpirationDate <= DateTime.Now;
+        }
+    }
 
 
     [JsonIgnore]
@@ -23,4 +37,7 @@ public class User : BaseEntity
 
     [JsonIgnore]
     public byte[] PasswordSalt { get; set; }
+
+    [JsonIgnore]
+    public string Token { get; set; } = string.Empty;
 }
