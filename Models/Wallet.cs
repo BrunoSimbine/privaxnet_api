@@ -15,5 +15,5 @@ public class Wallet : BaseEntity
     public Guid UserId { get; set; }
 
     public string Account { get; set; }
-    public string FullName { get; set; }
+    public string Fullname { get; set; }
 }

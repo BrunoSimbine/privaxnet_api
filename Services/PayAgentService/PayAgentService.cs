@@ -33,7 +33,7 @@ public class PayAgentService : IPayAgentService
         var currency = await _currencyRepository.GetCurrencyAsync(payAgentDto.CurrencyId);
         var payAgent = await _payAgentRepository.CreatePayAgent(new PayAgent {
             Currency = currency,
-            Name = payAgentDto.Name,
+            Fullname = payAgentDto.Fullname,
             Account = payAgentDto.Account
         });
 

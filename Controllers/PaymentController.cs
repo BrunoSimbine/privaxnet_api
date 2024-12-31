@@ -36,9 +36,9 @@ public class PaymentController : ControllerBase
     }
 
     [HttpGet("get"), Authorize]
-    public async Task<ActionResult<ProductViewModel>> GetMyPayments(Guid Id)
+    public async Task<ActionResult<List<PaymentViewModel>>> GetMyPayments()
     {
-        return Ok("A caminho!");
+        return Ok(await _paymentService.GetMyPayments());
     }
 
     [HttpGet("all"), Authorize]

@@ -127,7 +127,7 @@ public class UserService : IUserService
         var token = _userRepository.GetCurrentToken();
         var user = await _userRepository.GetUserAsync();
         if (token != user.Token) {
-            throw new TokenNotValidException("Ola Mundo!");
+            throw new TokenNotValidException("Token in not valid!");
             return new User();
         }else{
             return user;
@@ -205,13 +205,12 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<User> AddBalanceAsync(decimal balance) 
+    public async Task<User> AddDays(long days) 
     {
         var user = _userRepository.GetUser();
-        user.Balance += balance;
+        user.ExpirationDate = DateTime.Now.AddDays(days);
         await _userRepository.SaveChangesAsync();
         return user;
     }
-
 }
 

@@ -33,7 +33,7 @@ public class PaymentService : IPaymentService
         _payAgentRepository = payAgentRepository;
     }
 
-    public async Task<Payment> CreatePayment(PaymentDto paymentDto)
+    public async Task<PaymentViewModel> CreatePayment(PaymentDto paymentDto)
     {
         var wallet = await _walletRepository.GetWalletAsync(paymentDto.WalletId);
         var currency = await _currencyRepository.GetCurrencyAsync(wallet.CurrencyId);
@@ -41,17 +41,98 @@ public class PaymentService : IPaymentService
 
         var payment = await _paymentRepository.CreatePayment(new Payment {
             Amount = paymentDto.Amount,
-            ExchangeAmount = paymentDto.Amount * currency.ExchangeRate,
+            ExchangeAmount = paymentDto.Amount * currency.Rate,
             Wallet = wallet,
             PayAgent = payAgent
         });
 
-        return payment;
+        var paymentViewModel = new PaymentViewModel
+        {
+            Id = payment.Id,
+            PaymentMethod = currency.Label,        
+            Amount = payment.ExchangeAmount,
+
+            CurrencySymbol = currency.Symbol,
+            CurrencyName = currency.Name,
+
+            AgentName = payAgent.Fullname,
+            AgentAccount = payAgent.Account,
+
+            UserName = wallet.Fullname,
+            UserAccount = wallet.Account,
+
+            IsAproved = payment.IsAproved
+        };
+        
+        return paymentViewModel;
     }
 
-    public async Task<List<Payment>> GetPayments()
+    public async Task<List<PaymentViewModel>> GetPayments()
     {
-        return await _paymentRepository.GetPayments();
+        var payments = await _paymentRepository.GetPayments();
+        var paymentsViewModel = new List<PaymentViewModel>();
+
+        foreach (var payment in payments)
+        {
+            var wallet = await _walletRepository.GetWalletAsync(payment.WalletId);
+            var currency = await _currencyRepository.GetCurrencyAsync(wallet.CurrencyId);
+            var payAgent = await _payAgentRepository.GetPayAgentAsync(payment.PayAgentId);
+            var user = await _userRepository.GetUserByIdAsync(wallet.UserId);
+
+            paymentsViewModel.Add(new PaymentViewModel {
+                Id = payment.Id,
+                PaymentMethod = currency.Label,        
+                Amount = payment.ExchangeAmount,
+
+                CurrencySymbol = currency.Symbol,
+                CurrencyName = currency.Name,
+
+                AgentName = payAgent.Fullname,
+                AgentAccount = payAgent.Account,
+
+                UserName = wallet.Fullname,
+                UserAccount = wallet.Account,
+
+                IsAproved = payment.IsAproved
+            });
+        }
+
+        return paymentsViewModel;
+    }
+
+    public async Task<List<PaymentViewModel>> GetMyPayments()
+    {
+        var myUser = await _userRepository.GetUserAsync();
+        var myWallets = await _walletRepository.GetWalletsByUser(myUser);
+        var payments = await _paymentRepository.GetPaymentsByWallets(myWallets);
+        var paymentsViewModel = new List<PaymentViewModel>();
+
+        foreach (var payment in payments)
+        {
+            var wallet = await _walletRepository.GetWalletAsync(payment.WalletId);
+            var currency = await _currencyRepository.GetCurrencyAsync(wallet.CurrencyId);
+            var payAgent = await _payAgentRepository.GetPayAgentAsync(payment.PayAgentId);
+            var user = await _userRepository.GetUserByIdAsync(wallet.UserId);
+
+            paymentsViewModel.Add(new PaymentViewModel {
+                Id = payment.Id,
+                PaymentMethod = currency.Label,        
+                Amount = payment.ExchangeAmount,
+
+                CurrencySymbol = currency.Symbol,
+                CurrencyName = currency.Name,
+
+                AgentName = payAgent.Fullname,
+                AgentAccount = payAgent.Account,
+
+                UserName = wallet.Fullname,
+                UserAccount = wallet.Account,
+
+                IsAproved = payment.IsAproved
+            });
+        }
+
+        return paymentsViewModel;
     }
 
     public async Task<User> AprovePayment(Guid Id)

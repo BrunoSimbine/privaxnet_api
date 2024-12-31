@@ -182,11 +182,11 @@ public class UserController : ControllerBase
 
 
 
-    [HttpPut("update/balance"), Authorize(Roles = "admin")]
-    public async Task<ActionResult<User>> AddBalance([FromQuery] decimal balance)
+    [HttpPut("update/duration"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<User>> AddBalance([FromQuery] long days)
     {
         try {
-            var user = await _userService.AddBalanceAsync(balance);
+            var user = await _userService.AddDays(days);
             return Ok(user);
         } catch (UserNotFoundException ex) {
             return NotFound(new {

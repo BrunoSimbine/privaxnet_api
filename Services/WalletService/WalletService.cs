@@ -37,7 +37,7 @@ public class WalletService : IWalletService
             User = user,
             Currency = currency,
             Account = walletDto.Account,
-            FullName = walletDto.Fullname
+            Fullname = walletDto.Fullname
         });
 
         return wallet;

@@ -7,6 +7,7 @@ public interface IWalletRepository
 {
     Task<Wallet> CreateWallet(Wallet wallet);
     Task<List<Wallet>> GetWallets();
+    Task<List<Wallet>> GetWalletsByUser(User user);
     Task<Wallet> GetWalletAsync(Guid Id);
     bool WalletExists(Guid Id);
 }

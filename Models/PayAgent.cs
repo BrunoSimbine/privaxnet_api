@@ -6,7 +6,7 @@ namespace privaxnet_api.Models;
 
 public class PayAgent : BaseEntity
 {
-    public string Name { get; set; }
+    public string Fullname { get; set; }
     public string Account { get; set; }
 
     [JsonIgnore]

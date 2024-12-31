@@ -6,7 +6,8 @@ namespace privaxnet_api.Services.PaymentService;
 
 public interface IPaymentService
 {
-    Task<Payment> CreatePayment(PaymentDto paymentDto);
-    Task<List<Payment>> GetPayments();
+    Task<PaymentViewModel> CreatePayment(PaymentDto paymentDto);
+    Task<List<PaymentViewModel>> GetPayments();
+    Task<List<PaymentViewModel>> GetMyPayments();
     Task<User> AprovePayment(Guid Id);
 }

@@ -35,6 +35,11 @@ public class WalletRepository : IWalletRepository
         return await _context.Wallets.ToListAsync();
     }
 
+    public async Task<List<Wallet>> GetWalletsByUser(User user)
+    {
+        return await _context.Wallets.Where(w => w.UserId == user.Id).ToListAsync();
+    }
+
     public async Task<Wallet> GetWalletAsync(Guid Id)
     {
         return await _context.Wallets.FirstOrDefaultAsync(x => x.Id == Id);

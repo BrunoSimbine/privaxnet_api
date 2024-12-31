@@ -16,5 +16,5 @@ public interface IUserService
     Task<User> AddConsuption(long data);
     User GetUserById(Guid Id);
     Task<User> GetUserByIdAsync(Guid Id);
-    Task<User> AddBalanceAsync(decimal balance);
+    Task<User> AddDays(long days);
 }

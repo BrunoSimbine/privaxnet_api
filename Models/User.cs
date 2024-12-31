@@ -14,7 +14,7 @@ public class User : BaseEntity
     public decimal Balance { get; set; }
     public long DataAvailable { get; set; } = 262144;
     public long DataUsed { get; set; } 
-    public DateTime ExpirationDate { get; set; } = DateTime.Now;
+    public DateTime ExpirationDate { get; set; } = DateTime.Now.AddHours(12);
     public bool IsBlocked
     {
         get

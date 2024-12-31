@@ -9,7 +9,8 @@ public class Currency : BaseEntity
     public string Label { get; set; }
     public string LabelId { get; set; }
     
-    public decimal ExchangeRate { get; set; }
-    public string CurrencySymbol { get; set; }
-    public string CurrencyName { get; set; }
+    public decimal Rate { get; set; }
+    public string Symbol { get; set; }
+    public string Name { get; set; }
 }
+

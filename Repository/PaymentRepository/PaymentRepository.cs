@@ -39,6 +39,19 @@ public class PaymentRepository : IPaymentRepository
         return await _context.Payments.ToListAsync();
     }
 
+    public async Task<List<Payment>> GetPaymentsByWallets(List<Wallet> wallets)
+    {
+        var allPayments = new List<Payment>();
+        foreach (var wallet in wallets)
+        {
+            var payments = await _context.Payments.Where(u => u.WalletId == wallet.Id).ToListAsync();
+            allPayments.AddRange(payments);
+        }
+
+        return allPayments;
+    }
+
+
     public async Task<bool> PaymentExixts(Guid Id)
     {
         return await _context.Payments.AnyAsync(x => x.Id == Id);

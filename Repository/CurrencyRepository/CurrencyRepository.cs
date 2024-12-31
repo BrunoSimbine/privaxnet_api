@@ -27,9 +27,9 @@ public class CurrencyRepository : ICurrencyRepository
         var currency = new Currency {  
             Label = currencyDto.Label,
             LabelId = currencyDto.LabelId,
-            ExchangeRate = currencyDto.ExchangeRate,
-            CurrencySymbol = currencyDto.CurrencySymbol,
-            CurrencyName = currencyDto.CurrencyName
+            Rate = currencyDto.Rate,
+            Symbol = currencyDto.Symbol,
+            Name = currencyDto.Name
         };
 
         _context.Currencies.Add(currency);
