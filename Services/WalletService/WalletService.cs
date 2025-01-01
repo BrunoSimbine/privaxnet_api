@@ -49,6 +49,13 @@ public class WalletService : IWalletService
         return wallets;
     }
 
+    public async Task<List<Wallet>> GetMyWallets()
+    {
+        var userId = _userRepository.GetId();
+        var wallets = await _walletRepository.GetMyWallets(userId);
+        return wallets;
+    }
+
     public async Task<Wallet> GetWallet(Guid Id)
     {
         var walletExists = _walletRepository.WalletExists(Id);

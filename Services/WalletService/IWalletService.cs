@@ -8,5 +8,6 @@ public interface IWalletService
 {
 	Task<Wallet> CreateWallet(WalletDto walletDto);
 	Task<List<Wallet>> GetWallets();
+	Task<List<Wallet>> GetMyWallets();
 	Task<Wallet> GetWallet(Guid Id);
 }

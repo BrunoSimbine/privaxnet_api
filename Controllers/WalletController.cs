@@ -60,6 +60,12 @@ public class WalletController : ControllerBase
         var wallets = await _walletService.GetWallets();
         return Ok(wallets);
     }
+    [HttpGet("get")]
+    public async Task<ActionResult<List<Wallet>>> GetMyWallets()
+    {
+        var wallets = await _walletService.GetMyWallets();
+        return Ok(wallets);
+    }
 
 
     [HttpPut("update")]
