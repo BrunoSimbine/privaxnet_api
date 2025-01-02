@@ -145,6 +145,7 @@ public class UserRepository : IUserRepository
     {
         var user = await GetUserByIdAsync(userId);
         user.Balance += balance;
+        user.DateUpdated = DateTime.Now;
         await _context.SaveChangesAsync();
         return user;
     }

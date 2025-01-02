@@ -52,10 +52,24 @@ public class PaymentRepository : IPaymentRepository
     }
 
 
-    public async Task<bool> PaymentExixts(Guid Id)
+    public async Task<bool> PaymentExists(Guid Id)
     {
         return await _context.Payments.AnyAsync(x => x.Id == Id);
     }
+
+    public async Task<bool> IsAproved(Payment pay)
+    {
+        var payment = await _context.Payments.FirstOrDefaultAsync(x => x.Id == pay.Id);
+        return payment.IsAproved;
+    }
+
+    public async Task Aprove(Payment pay)
+    {
+        var payment = await _context.Payments.FirstOrDefaultAsync(x => x.Id == pay.Id);
+        payment.IsAproved = true;
+        await _context.SaveChangesAsync();
+    }
+
 
 }
 

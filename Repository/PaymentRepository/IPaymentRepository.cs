@@ -10,5 +10,7 @@ public interface IPaymentRepository
 	Task<Payment> GetPayment(Guid Id);
 	Task<List<Payment>> GetPayments();
 	Task<List<Payment>> GetPaymentsByWallets(List<Wallet> wallets);
-	Task<bool> PaymentExixts(Guid Id);
+	Task<bool> PaymentExists(Guid Id);
+	Task<bool> IsAproved(Payment pay);
+	Task Aprove(Payment pay);
 }

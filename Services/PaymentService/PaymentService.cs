@@ -141,8 +141,17 @@ public class PaymentService : IPaymentService
         var wallet = await _walletRepository.GetWalletAsync(payment.WalletId);
         var user = await _userRepository.GetUserByIdAsync(wallet.UserId);
 
-        var newUser = await _userRepository.AddBalanceAsync(user.Id, payment.Amount);
-        return newUser;
+        var isPaymentAvailable = await _paymentRepository.IsAproved(payment);
+        if(!isPaymentAvailable)
+        {
+            var newUser = await _userRepository.AddBalanceAsync(user.Id, payment.Amount);
+            await _paymentRepository.Aprove(payment);
+            return newUser;
+        }
+        else{
+            return new User();
+        }
+
     }
 
 }
