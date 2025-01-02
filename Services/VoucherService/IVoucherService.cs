@@ -12,4 +12,6 @@ public interface IVoucherService
     Task<Voucher> GetVoucherByCodeAsync(string Code);
     Task<VoucherViewModel> GetVoucherAsync(Guid Id);
     Task<Voucher> CreateVoucherAsync(Guid ProductId);
+    Task<List<VoucherViewModel>> GetUsed();
+    Task<List<VoucherViewModel>> GetCreated();
 }

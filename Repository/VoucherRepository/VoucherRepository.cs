@@ -74,6 +74,40 @@ public class VoucherRepository : IVoucherRepository
         return voucher;
     }
 
+    public async Task<List<VoucherViewModel>> GetUsed(Guid userId)
+    {
+        var voucher = await _context.Vouchers.Where(x => x.UserId == userId)
+        .Select(x => new VoucherViewModel 
+        {
+            Id = x.Id,
+            Code = x.Code,
+            IsUsed = x.IsUsed,
+            ProductId = x.ProductId,
+            UserId = x.UserId,
+            AgentId = x.AgentId,
+            RequestPhone = x.RequestPhone
+        }).ToListAsync();
+
+        return voucher;
+    }
+
+    public async Task<List<VoucherViewModel>> GetCreated(Guid agentId)
+    {
+        var voucher = await _context.Vouchers.Where(x => x.AgentId == agentId)
+        .Select(x => new VoucherViewModel 
+        {
+            Id = x.Id,
+            Code = x.Code,
+            IsUsed = x.IsUsed,
+            ProductId = x.ProductId,
+            UserId = x.UserId,
+            AgentId = x.AgentId,
+            RequestPhone = x.RequestPhone
+        }).ToListAsync();
+
+        return voucher;
+    }
+
     public async Task<Voucher> GetVoucherByCodeAsync(string Code)
     {
         var voucher = await _context.Vouchers.Where(x => x.Code == Code)

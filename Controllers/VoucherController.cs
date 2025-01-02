@@ -62,11 +62,20 @@ public class VoucherController : ControllerBase
         }
     }
 
-    [HttpGet("get"), Authorize]
-    public async Task<ActionResult<VoucherViewModel>> GetVokjucher(Guid Id)
+    [HttpGet("get/used"), Authorize]
+    public async Task<ActionResult<VoucherViewModel>> GetUsed()
     {
-        return Ok("");
+        var vouchers = await _voucherService.GetUsed();
+        return Ok(vouchers);
     }
+
+    [HttpGet("get/created"), Authorize]
+    public async Task<ActionResult<VoucherViewModel>> GetCreated()
+    {
+        var vouchers = await _voucherService.GetCreated();
+        return Ok(vouchers);
+    }
+
 
     [HttpGet("get/{Id}"), Authorize]
     public async Task<ActionResult<VoucherViewModel>> GetVoucher(Guid Id)

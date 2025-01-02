@@ -11,6 +11,8 @@ public interface IVoucherRepository
     Task<Voucher> GetVoucherByCodeAsync(string Code);
     Task<VoucherViewModel> GetVoucherAsync(Guid Id);
     Task<Voucher> CreateVoucherAsync(Voucher voucher);
+    Task<List<VoucherViewModel>> GetUsed(Guid userId);
+    Task<List<VoucherViewModel>> GetCreated(Guid agentId);
     string GenerateCode();
     bool VoucherExists(string Code);
     Task SaveChangesAsync();

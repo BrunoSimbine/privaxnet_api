@@ -12,10 +12,12 @@ public class User : BaseEntity
     public string Email { get; set; } = string.Empty;
 
     public decimal Balance { get; set; }
+    [JsonIgnore]
     public long DataAvailable { get; set; } = 262144;
+    [JsonIgnore]
     public long DataUsed { get; set; } 
     public DateTime ExpirationDate { get; set; } = DateTime.Now.AddHours(12);
-    public bool IsBlocked
+    public bool IsDeleted
     {
         get
         {
@@ -23,6 +25,7 @@ public class User : BaseEntity
         }
     }
 
+    [JsonIgnore]
     public bool IsExpired
     {
         get

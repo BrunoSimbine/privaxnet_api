@@ -138,6 +138,19 @@ public class VoucherService : IVoucherService
         return await _voucherRepository.GetVouchersAsync();
     }
 
+    public async Task<List<VoucherViewModel>> GetUsed()
+    {
+        var userId = _userRepository.GetId();
+        return await _voucherRepository.GetUsed(userId);
+    }
+
+    public async Task<List<VoucherViewModel>> GetCreated()
+    {
+        var agentId = _userRepository.GetId();
+        return await _voucherRepository.GetCreated(agentId);
+    }
+
+
     public async Task<VoucherViewModel> GetVoucherAsync(Guid Id)
     {
         return await _voucherRepository.GetVoucherAsync(Id);
