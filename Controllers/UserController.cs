@@ -86,11 +86,29 @@ public class UserController : ControllerBase
                 message = "Token is not valid!"
             }); 
         }
-
-
-
-
     }
+
+    [HttpGet("activity/verify"), Authorize]
+    public async Task<ActionResult<User>> VerifyActivity()
+    {
+        try {
+            var user = await _userService.GetUserAsync();
+            return Ok(user);
+        } catch (UserNotFoundException ex) {
+            return NotFound(new {
+                type = "error",
+                code = 404,
+                message = "Usuario nao encontrado!"
+            }); 
+        } catch (TokenNotValidException ex) {
+            return Unauthorized(new {
+                type = "error",
+                code = 403,
+                message = "Token is not valid!"
+            }); 
+        }
+    }
+
 
     [HttpGet("get/{Id}"), Authorize(Roles = "admin")]
     public async Task<ActionResult<User>> GetUserById(Guid Id)
