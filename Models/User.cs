@@ -25,7 +25,6 @@ public class User : BaseEntity
         }
     }
 
-    [JsonIgnore]
     public bool IsExpired
     {
         get
