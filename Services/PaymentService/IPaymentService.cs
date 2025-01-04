@@ -8,6 +8,7 @@ public interface IPaymentService
 {
     Task<PaymentViewModel> CreatePayment(PaymentDto paymentDto);
     Task<List<PaymentViewModel>> GetPayments();
+    Task<List<PaymentViewModel>> GetByUser(Guid userId);
     Task<List<PaymentViewModel>> GetMyPayments();
     Task<User> AprovePayment(Guid Id);
 }

@@ -41,6 +41,12 @@ public class PaymentController : ControllerBase
         return Ok(await _paymentService.GetMyPayments());
     }
 
+    [HttpGet("get/by/user/{userId}"), Authorize]
+    public async Task<ActionResult<List<PaymentViewModel>>> GetByUser(Guid userId)
+    {
+        return Ok(await _paymentService.GetByUser(userId));
+    }
+
     [HttpGet("all"), Authorize]
     public async Task<ActionResult<List<Payment>>> GetPayments()
     {

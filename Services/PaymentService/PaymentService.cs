@@ -100,6 +100,40 @@ public class PaymentService : IPaymentService
         return paymentsViewModel;
     }
 
+    public async Task<List<PaymentViewModel>> GetByUser(Guid userId)
+    {
+        var user = await _userRepository.GetUserByIdAsync(userId);
+        var wallets = await _walletRepository.GetWalletsByUser(user);
+        var payments = await _paymentRepository.GetPaymentsByWallets(wallets);
+        var paymentsViewModel = new List<PaymentViewModel>();
+
+        foreach (var payment in payments)
+        {
+            var wallet = await _walletRepository.GetWalletAsync(payment.WalletId);
+            var currency = await _currencyRepository.GetCurrencyAsync(wallet.CurrencyId);
+            var payAgent = await _payAgentRepository.GetPayAgentAsync(payment.PayAgentId);
+
+            paymentsViewModel.Add(new PaymentViewModel {
+                Id = payment.Id,
+                PaymentMethod = currency.Label,        
+                Amount = payment.ExchangeAmount,
+
+                CurrencySymbol = currency.Symbol,
+                CurrencyName = currency.Name,
+
+                AgentName = payAgent.Fullname,
+                AgentAccount = payAgent.Account,
+
+                UserName = wallet.Fullname,
+                UserAccount = wallet.Account,
+
+                IsAproved = payment.IsAproved
+            });
+        }
+
+        return paymentsViewModel;
+    }
+
     public async Task<List<PaymentViewModel>> GetMyPayments()
     {
         var myUser = await _userRepository.GetUserAsync();
