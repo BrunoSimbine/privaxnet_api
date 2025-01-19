@@ -31,7 +31,7 @@ public class CurrencyController : ControllerBase
     }
 
     [HttpPost("create"), Authorize(Roles = "admin")]
-    public async Task<ActionResult<Currency>> Create(CurrencyDto currencyDto)
+    public async Task<ActionResult<Currency>> Create(CurrencyDto currencyDto) 
     {
         try {
             var currency = await _currencyService.Create(currencyDto);
@@ -62,29 +62,37 @@ public class CurrencyController : ControllerBase
         }
     }
 
+    [HttpGet("get/deleted")]
+    public async Task<ActionResult<List<Currency>>> GetDeleted()
+    {
+        return Ok(await _currencyService.GetDeleted());
+    }
+
     [HttpGet("all")]
     public async Task<ActionResult<List<Currency>>> GetCurrencies()
     {
         return Ok(await _currencyService.GetCurrencies());
     }
 
-
-    [HttpPut("update"), Authorize(Roles = "admin")]
-    public async Task<ActionResult<SessionViewModel>> GsdetoiyToken()
+    [HttpPut("restore/{Id}"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<Currency>> Restore(Guid Id)
     {
-        return Ok("A caminho");
+        var currency = await _currencyService.Restore(Id);
+        return Ok(currency);
     }
 
-    [HttpPut("update/rate/{Rate}"), Authorize(Roles = "admin")]
-    public async Task<ActionResult<SessionViewModel>> GsdetoiyToken(decimal Rate)
+    [HttpPut("update/rate"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<Currency>> UpdateRate(RateDto rateDto)
     {
-        return Ok("A caminho");
+        var currency = await _currencyService.UpdateRate(rateDto);
+        return Ok(currency);
     }
 
-    [HttpDelete("delete"), Authorize(Roles = "admin")]
-    public async Task<ActionResult<SessionViewModel>> GsdetToken()
+    [HttpDelete("delete/{Id}"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<Currency>> DeleteToken(Guid Id)
     {
-        return Ok("A caminho");
+        var currency = await _currencyService.Delete(Id);
+        return Ok(currency);
     }
 
 }

@@ -6,94 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace privaxnet_api.Migrations
 {
     /// <inheritdoc />
-    public partial class ProductionMigration : Migration
+    public partial class Unbroke : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Status",
-                table: "Vouchers");
-
-            migrationBuilder.RenameColumn(
-                name: "CreatedAt",
-                table: "Vouchers",
-                newName: "DateCreated");
-
-            migrationBuilder.RenameColumn(
-                name: "Expires",
-                table: "Users",
-                newName: "ExpirationDate");
-
-            migrationBuilder.RenameColumn(
-                name: "DataAvaliable",
-                table: "Users",
-                newName: "DataAvailable");
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "DateDeleted",
-                table: "Vouchers",
-                type: "datetime(6)",
-                nullable: true);
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "DateUpdated",
-                table: "Vouchers",
-                type: "datetime(6)",
-                nullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsUsed",
-                table: "Vouchers",
-                type: "tinyint(1)",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AlterColumn<decimal>(
-                name: "Balance",
-                table: "Users",
-                type: "decimal(65,30)",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int");
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "DateCreated",
-                table: "Users",
-                type: "datetime(6)",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "DateDeleted",
-                table: "Users",
-                type: "datetime(6)",
-                nullable: true);
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "DateUpdated",
-                table: "Users",
-                type: "datetime(6)",
-                nullable: true);
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "DateCreated",
-                table: "Products",
-                type: "datetime(6)",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "DateDeleted",
-                table: "Products",
-                type: "datetime(6)",
-                nullable: true);
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "DateUpdated",
-                table: "Products",
-                type: "datetime(6)",
-                nullable: true);
+            migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Currencies",
@@ -104,13 +23,13 @@ namespace privaxnet_api.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     LabelId = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ExchangeRate = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    CurrencySymbol = table.Column<string>(type: "longtext", nullable: false)
+                    Rate = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    Symbol = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CurrencyName = table.Column<string>(type: "longtext", nullable: false)
+                    Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     DateDeleted = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
@@ -120,17 +39,73 @@ namespace privaxnet_api.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "PayAgents",
+                name: "Products",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    ImageUrl = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Price = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    DurationDays = table.Column<int>(type: "int", nullable: false),
+                    DataAmount = table.Column<long>(type: "bigint", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DateDeleted = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Role = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClientId = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Phone = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Balance = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    DataAvailable = table.Column<long>(type: "bigint", nullable: false),
+                    DataUsed = table.Column<long>(type: "bigint", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    LastActivity = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    PasswordHash = table.Column<byte[]>(type: "longblob", nullable: false),
+                    PasswordSalt = table.Column<byte[]>(type: "longblob", nullable: false),
+                    Token = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DateDeleted = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "PayAgents",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Fullname = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Account = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CurrencyId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     DateDeleted = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
@@ -146,6 +121,41 @@ namespace privaxnet_api.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Vouchers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Code = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IsUsed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    ProductId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AgentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RequestPhone = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DateDeleted = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Vouchers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Vouchers_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Vouchers_Users_AgentId",
+                        column: x => x.AgentId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Wallets",
                 columns: table => new
                 {
@@ -154,10 +164,10 @@ namespace privaxnet_api.Migrations
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Account = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    FullName = table.Column<string>(type: "longtext", nullable: false)
+                    Fullname = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     DateDeleted = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
@@ -190,7 +200,7 @@ namespace privaxnet_api.Migrations
                     PayAgentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     WalletId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     DateDeleted = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
@@ -227,6 +237,16 @@ namespace privaxnet_api.Migrations
                 column: "WalletId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Vouchers_AgentId",
+                table: "Vouchers",
+                column: "AgentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vouchers_ProductId",
+                table: "Vouchers",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Wallets_CurrencyId",
                 table: "Wallets",
                 column: "CurrencyId");
@@ -244,79 +264,22 @@ namespace privaxnet_api.Migrations
                 name: "Payments");
 
             migrationBuilder.DropTable(
+                name: "Vouchers");
+
+            migrationBuilder.DropTable(
                 name: "PayAgents");
 
             migrationBuilder.DropTable(
                 name: "Wallets");
 
             migrationBuilder.DropTable(
+                name: "Products");
+
+            migrationBuilder.DropTable(
                 name: "Currencies");
 
-            migrationBuilder.DropColumn(
-                name: "DateDeleted",
-                table: "Vouchers");
-
-            migrationBuilder.DropColumn(
-                name: "DateUpdated",
-                table: "Vouchers");
-
-            migrationBuilder.DropColumn(
-                name: "IsUsed",
-                table: "Vouchers");
-
-            migrationBuilder.DropColumn(
-                name: "DateCreated",
-                table: "Users");
-
-            migrationBuilder.DropColumn(
-                name: "DateDeleted",
-                table: "Users");
-
-            migrationBuilder.DropColumn(
-                name: "DateUpdated",
-                table: "Users");
-
-            migrationBuilder.DropColumn(
-                name: "DateCreated",
-                table: "Products");
-
-            migrationBuilder.DropColumn(
-                name: "DateDeleted",
-                table: "Products");
-
-            migrationBuilder.DropColumn(
-                name: "DateUpdated",
-                table: "Products");
-
-            migrationBuilder.RenameColumn(
-                name: "DateCreated",
-                table: "Vouchers",
-                newName: "CreatedAt");
-
-            migrationBuilder.RenameColumn(
-                name: "ExpirationDate",
-                table: "Users",
-                newName: "Expires");
-
-            migrationBuilder.RenameColumn(
-                name: "DataAvailable",
-                table: "Users",
-                newName: "DataAvaliable");
-
-            migrationBuilder.AddColumn<string>(
-                name: "Status",
-                table: "Vouchers",
-                type: "longtext",
-                nullable: false)
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Balance",
-                table: "Users",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(decimal),
-                oldType: "decimal(65,30)");
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

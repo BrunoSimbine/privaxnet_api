@@ -54,24 +54,45 @@ public class PayAgentController : ControllerBase
         }
     }
 
-    [HttpGet("all")]
+    [HttpGet("get/active")]
     public async Task<ActionResult<List<PayAgent>>> GetPayAgents()
     {
         return Ok(await _payAgentService.GetPayAgentsAsync());
     }
 
-
-    [HttpPut("update"), Authorize(Roles = "admin")]
-    public async Task<ActionResult<SessionViewModel>> GsdetoiyToken()
+    [HttpGet("get/deleted")]
+    public async Task<ActionResult<List<PayAgent>>> GetDeleted()
     {
-        return Ok("A caminho");
+        return Ok(await _payAgentService.GetDeleted());
     }
 
 
-    [HttpDelete("delete"), Authorize(Roles = "admin")]
-    public async Task<ActionResult<SessionViewModel>> GsdetToken()
+    [HttpPut("update/name"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<PayAgentViewModel>> UpdateName(PayAgentNameDto payAgentName)
     {
-        return Ok("A caminho");
+        var payAgent = await _payAgentService.UpdateName(payAgentName);
+        return Ok(payAgent);
+    }
+
+    [HttpPut("update/account"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<PayAgentViewModel>> UpdateAccount(PayAgentAccountDto payAgentAccount)
+    {
+        var payAgent = await _payAgentService.UpdateAccount(payAgentAccount);
+        return Ok(payAgent);
+    }
+
+    [HttpPut("recover/{Id}"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<PayAgentViewModel>> Recover(Guid Id)
+    {
+        var payAgent = await _payAgentService.Recover(Id);
+        return Ok(payAgent);
+    }
+
+    [HttpDelete("delete/{Id}"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<SessionViewModel>> Delete(Guid Id)
+    {
+        var payAgent = await _payAgentService.Delete(Id);
+        return Ok(payAgent);
     }
 
 

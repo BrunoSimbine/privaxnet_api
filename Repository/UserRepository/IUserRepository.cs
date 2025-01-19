@@ -9,6 +9,7 @@ public interface IUserRepository
     Task<User> CreateUserAsync(UserDto userDto);  
     Guid GetId();
     Task<List<User>> GetUsersAsync();
+    Task<List<User>> GetActives();
     Task<User> GetUserByIdAsync(Guid Id);
     Task<User> SetRolesAsync(Guid Id, string role);
     User GetUserById(Guid Id);
@@ -30,4 +31,5 @@ public interface IUserRepository
     Task<User> AddBalanceAsync(Guid userId, decimal balance);
     Task<User> UpdateToken(Guid userId, string token);
     string GetCurrentToken();
+    Task<User> VerifyAsync(User user);
 }

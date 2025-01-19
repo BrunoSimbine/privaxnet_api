@@ -34,7 +34,7 @@ namespace privaxnet_api.Migrations
                     b.Property<DateTime?>("DateDeleted")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime?>("DateUpdated")
+                    b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Label")
@@ -80,7 +80,7 @@ namespace privaxnet_api.Migrations
                     b.Property<DateTime?>("DateDeleted")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime?>("DateUpdated")
+                    b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Fullname")
@@ -109,7 +109,7 @@ namespace privaxnet_api.Migrations
                     b.Property<DateTime?>("DateDeleted")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime?>("DateUpdated")
+                    b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime(6)");
 
                     b.Property<decimal>("ExchangeAmount")
@@ -151,7 +151,7 @@ namespace privaxnet_api.Migrations
                     b.Property<DateTime?>("DateDeleted")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime?>("DateUpdated")
+                    b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("DurationDays")
@@ -160,9 +160,6 @@ namespace privaxnet_api.Migrations
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<bool>("IsAvaliable")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -201,7 +198,7 @@ namespace privaxnet_api.Migrations
                     b.Property<DateTime?>("DateDeleted")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime?>("DateUpdated")
+                    b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
@@ -209,6 +206,9 @@ namespace privaxnet_api.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("LastActivity")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
@@ -259,7 +259,7 @@ namespace privaxnet_api.Migrations
                     b.Property<DateTime?>("DateDeleted")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime?>("DateUpdated")
+                    b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsUsed")
@@ -303,7 +303,7 @@ namespace privaxnet_api.Migrations
                     b.Property<DateTime?>("DateDeleted")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime?>("DateUpdated")
+                    b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Fullname")

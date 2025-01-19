@@ -35,6 +35,21 @@ public class ProductService : IProductService
         return await _productRepository.GetProducts();
     }
 
+    public async Task<List<Product>> GetDeleted()
+    {
+        return await _productRepository.GetDeleted();
+    }
+
+    public async Task<Product> UpdatePrice(ProductPriceDto productPriceDto)
+    {
+        return await _productRepository.UpdatePrice(productPriceDto);
+    }
+
+    public async Task<Product> UpdateDuration(ProductDurationDto productDurationDto)
+    {
+        return await _productRepository.UpdateDuration(productDurationDto);
+    }
+
     public async Task<Product> GetProductAsync(Guid Id)
     {
         return await _productRepository.GetProductAsync(Id);
@@ -43,6 +58,16 @@ public class ProductService : IProductService
     public Product GetProduct(Guid Id)
     {
         return _productRepository.GetProduct(Id);
+    }
+
+    public async Task<Product> Recover(Guid Id)
+    {
+        return await _productRepository.Recover(Id);
+    }
+
+    public async Task<Product> Delete(Guid Id)
+    {
+        return await _productRepository.Delete(Id);
     }
 
 }

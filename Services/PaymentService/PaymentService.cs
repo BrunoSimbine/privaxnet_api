@@ -1,3 +1,4 @@
+
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -93,7 +94,8 @@ public class PaymentService : IPaymentService
                 UserName = wallet.Fullname,
                 UserAccount = wallet.Account,
 
-                IsAproved = payment.IsAproved
+                IsAproved = payment.IsAproved,
+                DateUpdated = payment.DateUpdated
             });
         }
 
@@ -127,7 +129,8 @@ public class PaymentService : IPaymentService
                 UserName = wallet.Fullname,
                 UserAccount = wallet.Account,
 
-                IsAproved = payment.IsAproved
+                IsAproved = payment.IsAproved,
+                DateUpdated = payment.DateUpdated
             });
         }
 
@@ -162,7 +165,8 @@ public class PaymentService : IPaymentService
                 UserName = wallet.Fullname,
                 UserAccount = wallet.Account,
 
-                IsAproved = payment.IsAproved
+                IsAproved = payment.IsAproved,
+                DateUpdated = payment.DateUpdated
             });
         }
 

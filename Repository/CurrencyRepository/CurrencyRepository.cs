@@ -39,9 +39,25 @@ public class CurrencyRepository : ICurrencyRepository
 
     public async Task<List<Currency>> GetCurrencies()
     {
-        var currencies = await _context.Currencies.ToListAsync();
+        var currencies = await _context.Currencies.Where(c => c.DateDeleted == null).ToListAsync();
         return currencies;
     }
+
+    public async Task<List<Currency>> GetDeleted()
+    {
+        var currencies = await _context.Currencies.Where(c => c.DateDeleted != null).ToListAsync();
+        return currencies;
+    }
+
+    public async Task<Currency> Restore(Guid Id)
+    {
+        var currency = await _context.Currencies.FirstOrDefaultAsync(c => c.Id == Id);
+        currency.DateDeleted = null;
+        currency.DateUpdated = DateTime.Now;
+        await _context.SaveChangesAsync();
+        return currency;
+    }
+
 
     public async Task<bool> LabelExists(string Label)
     {
@@ -64,6 +80,34 @@ public class CurrencyRepository : ICurrencyRepository
     public async Task<Currency> GetCurrencyAsync(Guid Id)
     {
         var currency = await _context.Currencies.FirstOrDefaultAsync(x => x.Id == Id);
+        return currency;
+    }
+
+    public async Task<Currency> UpdateCurrency(Guid Id)
+    {
+        var currency = _context.Currencies.FirstOrDefault(x => x.Id == Id);
+        currency.DateDeleted = DateTime.Now;
+        await _context.SaveChangesAsync();
+        return currency;
+    }
+
+
+    public async Task<Currency> UpdateRate(Currency currency)
+    {
+        var myCurrency = _context.Currencies.FirstOrDefault(x => x.Id == currency.Id);
+        myCurrency.Rate = currency.Rate;
+        myCurrency.DateUpdated = DateTime.Now;
+        await _context.SaveChangesAsync();
+        return myCurrency;
+    }
+
+    public async Task<Currency> Delete(Guid Id)
+    {
+        var currency = _context.Currencies.FirstOrDefault(x => x.Id == Id);
+        currency.DateDeleted = DateTime.Now;
+        currency.DateUpdated = DateTime.Now;
+
+        await _context.SaveChangesAsync();
         return currency;
     }
 

@@ -40,9 +40,46 @@ public class PayAgentService : IPayAgentService
         return payAgent;
     }
 
-    public async Task<List<PayAgent>> GetPayAgentsAsync()
+    public async Task<List<PayAgentViewModel>> GetPayAgentsAsync()
     {
-        return await _payAgentRepository.GetPayAgentsAsync();
+        var payAgents = await _payAgentRepository.GetPayAgentsAsync();
+        var payAgentsViewModel = new List<PayAgentViewModel>();
+
+        foreach (var payAgent in payAgents)
+        {
+            var currency = await _currencyRepository.GetCurrencyAsync(payAgent.CurrencyId);
+            payAgentsViewModel.Add(new PayAgentViewModel {
+                Id = payAgent.Id,
+                Fullname = payAgent.Fullname,
+                Account = payAgent.Account,
+                DateCreated = payAgent.DateCreated,
+                DateUpdated = payAgent.DateUpdated,
+                Method = currency.Label
+            });
+        }
+
+        return payAgentsViewModel;
+    }
+
+    public async Task<List<PayAgentViewModel>> GetDeleted()
+    {
+        var payAgents = await _payAgentRepository.GetDeleted();
+        var payAgentsViewModel = new List<PayAgentViewModel>();
+
+        foreach (var payAgent in payAgents)
+        {
+            var currency = await _currencyRepository.GetCurrencyAsync(payAgent.CurrencyId);
+            payAgentsViewModel.Add(new PayAgentViewModel {
+                Id = payAgent.Id,
+                Fullname = payAgent.Fullname,
+                Account = payAgent.Account,
+                DateCreated = payAgent.DateCreated,
+                DateUpdated = payAgent.DateUpdated,
+                Method = currency.Label
+            });
+        }
+
+        return payAgentsViewModel;
     }
 
     public async Task<PayAgent> GetPayAgentAsync(Guid Id)
@@ -58,6 +95,29 @@ public class PayAgentService : IPayAgentService
         
     }
 
+    public async Task<PayAgent> UpdateName(PayAgentNameDto payAgentName)
+    {
+        var payAgent = await _payAgentRepository.UpdateName(payAgentName);
+        return payAgent;
+    }
+
+    public async Task<PayAgent> UpdateAccount(PayAgentAccountDto payAgentAccount)
+    {
+        var payAgent = await _payAgentRepository.UpdateAccount(payAgentAccount);
+        return payAgent;
+    }
+
+    public async Task<PayAgent> Recover(Guid Id)
+    {
+        var payAgent = await _payAgentRepository.Recover(Id);
+        return payAgent;
+    }
+
+    public async Task<PayAgent> Delete(Guid Id)
+    {
+        var payAgent = await _payAgentRepository.Delete(Id);
+        return payAgent;
+    }
 
 }
 

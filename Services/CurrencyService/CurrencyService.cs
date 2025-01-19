@@ -48,6 +48,20 @@ public class CurrencyService : ICurrencyService
         return currencies;
     }
 
+    public async Task<List<Currency>> GetDeleted()
+    {
+        var currencies = await _currencyRepository.GetDeleted();
+        return currencies;
+    }
+
+    public async Task<Currency> Restore(Guid Id)
+    {
+        var currency = await _currencyRepository.Restore(Id);
+        return currency;
+    }
+
+
+
     public async Task<Currency> GetCurrency(Guid Id)
     {
         var currencyExists = await _currencyRepository.CurrencyExists(Id);
@@ -58,6 +72,19 @@ public class CurrencyService : ICurrencyService
             throw new CurrencyNotFoundException("Currency not found");
             return new Currency();
         }
+    }
+
+    public async Task<Currency> UpdateRate(RateDto rateDto)
+    {
+        var currency = await _currencyRepository.GetCurrencyAsync(rateDto.CurrencyId);
+        currency.Rate = rateDto.Rate;
+        return await _currencyRepository.UpdateRate(currency);
+    }
+
+    public async Task<Currency> Delete(Guid Id)
+    {
+        var currency = await _currencyRepository.Delete(Id);
+        return currency;
     }
 
 }

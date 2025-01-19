@@ -17,6 +17,15 @@ public class User : BaseEntity
     [JsonIgnore]
     public long DataUsed { get; set; } 
     public DateTime ExpirationDate { get; set; } = DateTime.Now.AddHours(12);
+    public DateTime LastActivity { get; set; } = DateTime.Now;
+
+    public bool IsOnline
+    {
+        get
+        {
+            return (DateTime.Now - LastActivity).Duration().TotalMinutes < 5;
+        }
+    }
     public bool IsDeleted
     {
         get

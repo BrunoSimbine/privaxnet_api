@@ -81,6 +81,20 @@ public class UserService : IUserService
         return users;
     }
 
+    public async Task<List<User>> GetActives()
+    {
+        var users = await _userRepository.GetActives();
+        return users;
+    }
+
+    public async Task<User> VerifyAsync()
+    {
+
+        var user = await _userRepository.GetUserAsync();
+        await _userRepository.VerifyAsync(user);
+        return user;
+    }
+
 
     public async Task<User> GetUserByIdAsync(Guid Id)
     {

@@ -7,6 +7,11 @@ namespace privaxnet_api.Services.PayAgentService;
 public interface IPayAgentService
 {
     Task<PayAgent> CreatePayAgent(PayAgentDto payAgentDto);
-    Task<List<PayAgent>> GetPayAgentsAsync();
+    Task<List<PayAgentViewModel>> GetPayAgentsAsync();
     Task<PayAgent> GetPayAgentAsync(Guid Id);
+    Task<PayAgent> UpdateName(PayAgentNameDto payAgentName);
+    Task<PayAgent> UpdateAccount(PayAgentAccountDto payAgentAccount);
+    Task<List<PayAgentViewModel>> GetDeleted();
+    Task<PayAgent> Recover(Guid Id);
+    Task<PayAgent> Delete(Guid Id);
 }

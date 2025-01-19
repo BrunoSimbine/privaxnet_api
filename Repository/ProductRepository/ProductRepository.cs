@@ -27,7 +27,7 @@ public class ProductRepository : IProductRepository
         var product = new Product {
             Name = productDto.Name,
             Price = productDto.Price,
-            DataAmount = productDto.DataAmount,
+            DataAmount = 20,
             DurationDays = productDto.DurationDays
         };
 
@@ -38,7 +38,14 @@ public class ProductRepository : IProductRepository
 
     public async Task<List<Product>> GetProducts()
     {
-        var products = await _context.Products.ToListAsync();
+        var products = await _context.Products.Where(p => p.DateDeleted == null).ToListAsync();
+        return products;
+    }
+
+    public async Task<List<Product>> GetDeleted()
+    {
+        var now = DateTime.Now;
+        var products = await _context.Products.Where(p => p.DateDeleted <= now).ToListAsync();
         return products;
     }
 
@@ -57,6 +64,42 @@ public class ProductRepository : IProductRepository
     public bool ProductExists(Guid Id)
     {
         return _context.Products.Any(x => x.Id == Id);
+    }
+
+    public async Task<Product> UpdatePrice(ProductPriceDto productPriceDto)
+    {
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productPriceDto.ProductId);
+        product.Price = productPriceDto.Price;
+        product.DateUpdated = DateTime.Now;
+        await _context.SaveChangesAsync();
+        return product;
+    }
+
+    public async Task<Product> UpdateDuration(ProductDurationDto productDurationDto)
+    {
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productDurationDto.ProductId);
+        product.DurationDays = productDurationDto.Duration;
+        product.DateUpdated = DateTime.Now;
+        await _context.SaveChangesAsync();
+        return product;
+    }
+
+    public async Task<Product> Recover(Guid Id)
+    {
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == Id);
+        product.DateDeleted = null;
+        product.DateUpdated = DateTime.Now;
+        await _context.SaveChangesAsync();
+        return product;
+    }
+
+    public async Task<Product> Delete(Guid Id)
+    {
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == Id);
+        product.DateDeleted = DateTime.Now;
+        product.DateUpdated = DateTime.Now;
+        await _context.SaveChangesAsync();
+        return product;
     }
 
 }

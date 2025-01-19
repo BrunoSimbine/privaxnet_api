@@ -8,8 +8,6 @@ using privaxnet_api.Exceptions;
 using privaxnet_api.Services.ProductService;
 using Microsoft.AspNetCore.Authorization;
 
-
-
 namespace privaxnet_api.Controllers;
 
 [ApiController]
@@ -23,8 +21,8 @@ public class ProductController : ControllerBase
         _productService = productService;
     }
 
-    [HttpPost("create"), Authorize(Roles = "admin")]
-    public async Task<ActionResult<Product>> CreateProduct([FromForm]ProductDto productDto)
+    [HttpPost("create"), Authorize]
+    public async Task<ActionResult<Product>> CreateProduct(ProductDto productDto)
     {
         try {
             var product = await _productService.CreateProductAsync(productDto);
@@ -61,21 +59,39 @@ public class ProductController : ControllerBase
 
     }
 
-    [HttpGet("get"), Authorize]
-    public async Task<ActionResult<ProductViewModel>> GetPrereoduct(Guid Id)
+    [HttpGet("get/deleted"), Authorize]
+    public async Task<ActionResult<ProductViewModel>> GetDeleted()
     {
-        return Ok("djshd");
+        var products = await _productService.GetDeleted();
+        return Ok(products);
     }
 
-    [HttpPut("update"), Authorize]
-    public async Task<ActionResult<ProductViewModel>> GetPreruyeoduct(Guid Id)
+    [HttpPut("update/price"), Authorize]
+    public async Task<ActionResult<Product>> UpdatePrice(ProductPriceDto productPriceDto)
     {
-        return Ok("sfd");
+        var product = await _productService.UpdatePrice(productPriceDto);
+        return Ok(product);
     }
+
+    [HttpPut("update/duration"), Authorize]
+    public async Task<ActionResult<Product>> UpdateDuration(ProductDurationDto productDurationDto)
+    {
+        var product = await _productService.UpdateDuration(productDurationDto);
+        return Ok(product);
+    }
+
+    [HttpPut("update/recover/{Id}"), Authorize]
+    public async Task<ActionResult<Product>> Recover(Guid Id)
+    {
+        var product = await _productService.Recover(Id);
+        return Ok(product);
+    }
+
 
     [HttpDelete("delete/{Id}"), Authorize]
-    public async Task<ActionResult<ProductViewModel>> GetPrereodusdct(Guid Id)
+    public async Task<ActionResult<Product>> Delete(Guid Id)
     {
-        return Ok("sfd");
+        var product = await _productService.Delete(Id);
+        return Ok(product);
     }
 }

@@ -61,6 +61,14 @@ public class UserRepository : IUserRepository
         return users; // Amizade2020.z
     }
 
+    public async Task<User> VerifyAsync(User user)
+    {
+        var myUser = await _context.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+        myUser.LastActivity = DateTime.Now;
+        await _context.SaveChangesAsync();
+        return myUser;
+    }
+
     public async Task<User> GetUserByIdAsync(Guid Id)
     {
         return await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
@@ -140,6 +148,14 @@ public class UserRepository : IUserRepository
             return false;
         }
     }
+
+    public async Task<List<User>> GetActives()
+    {
+        var now = DateTime.Now;
+        var users = await _context.Users.Where(u => u.ExpirationDate > now).ToListAsync();
+        return users;
+    }
+
 
     public async Task<User> AddBalanceAsync(Guid userId, decimal balance)
     {

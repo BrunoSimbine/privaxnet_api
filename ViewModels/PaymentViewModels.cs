@@ -20,4 +20,5 @@ public class PaymentViewModel
     public string UserAccount { get; set; }
 
     public bool IsAproved { get; set; }
+    public DateTime DateUpdated { get; set; }
 }

@@ -32,7 +32,12 @@ public class PayAgentRepository : IPayAgentRepository
 
     public async Task<List<PayAgent>> GetPayAgentsAsync()
     {
-        return await _context.PayAgents.ToListAsync();
+        return await _context.PayAgents.Where(x => x.DateDeleted == null).ToListAsync();
+    } 
+
+    public async Task<List<PayAgent>> GetDeleted()
+    {
+        return await _context.PayAgents.Where(x => x.DateDeleted != null).ToListAsync();
     } 
 
     public async Task<PayAgent> GetPayAgentAsync(Guid Id)
@@ -52,6 +57,43 @@ public class PayAgentRepository : IPayAgentRepository
         .OrderBy(x => Guid.NewGuid())
         .FirstOrDefaultAsync();
     }
+
+    public async Task<PayAgent> UpdateName(PayAgentNameDto payAgentName)
+    {
+        var payAgent = await _context.PayAgents.FirstOrDefaultAsync(x => x.Id == payAgentName.AgentId);
+        payAgent.DateUpdated = DateTime.Now;
+        payAgent.Fullname = payAgentName.Name;
+        await _context.SaveChangesAsync();
+        return payAgent;
+    }
+
+    public async Task<PayAgent> UpdateAccount(PayAgentAccountDto payAgentAccount)
+    {
+        var payAgent = await _context.PayAgents.FirstOrDefaultAsync(x => x.Id == payAgentAccount.AgentId);
+        payAgent.DateUpdated = DateTime.Now;
+        payAgent.Account = payAgentAccount.Account;
+        await _context.SaveChangesAsync();
+        return payAgent;
+    }
+
+    public async Task<PayAgent> Recover(Guid Id)
+    {
+        var payAgent = await _context.PayAgents.FirstOrDefaultAsync(x => x.Id == Id);
+        payAgent.DateUpdated = DateTime.Now;
+        payAgent.DateDeleted = null;
+        await _context.SaveChangesAsync();
+        return payAgent;
+    }
+
+    public async Task<PayAgent> Delete(Guid Id)
+    {
+        var payAgent = await _context.PayAgents.FirstOrDefaultAsync(x => x.Id == Id);
+        payAgent.DateUpdated = DateTime.Now;
+        payAgent.DateDeleted = DateTime.Now;
+        await _context.SaveChangesAsync();
+        return payAgent;
+    }
+
 
 }
 
