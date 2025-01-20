@@ -91,7 +91,7 @@ public class UserController : ControllerBase
     [HttpGet("status"), Authorize]
     public async Task<ActionResult<User>> GetStatus()
     {
-        return Ok();
+        return Ok(await _userService.GetStatus());
     }
 
     [HttpGet("get/active"), Authorize]
