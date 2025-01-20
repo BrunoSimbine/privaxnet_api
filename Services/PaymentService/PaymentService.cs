@@ -102,6 +102,19 @@ public class PaymentService : IPaymentService
         return paymentsViewModel;
     }
 
+
+    public async Task<PaymentStatusViewModel> GetStatus()
+    {
+        var paymentStatus = new PaymentStatusViewModel();
+        paymentStatus.Earns = await _paymentRepository.CountEarns();
+        paymentStatus.EarnsToday = await _paymentRepository.CountEarnsToday();
+        paymentStatus.Invoices = await _paymentRepository.CountInvoices();
+        paymentStatus.Paid = await _paymentRepository.CountPaid();
+
+        return paymentStatus;
+    }
+
+
     public async Task<List<PaymentViewModel>> GetByUser(Guid userId)
     {
         var user = await _userRepository.GetUserByIdAsync(userId);

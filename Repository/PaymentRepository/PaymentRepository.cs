@@ -70,6 +70,46 @@ public class PaymentRepository : IPaymentRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<decimal> CountEarns()
+    {
+        decimal earns = 0;
+        var now = DateTime.Now.AddDays(-30);
+        var payments = await _context.Payments.Where(x => x.DateUpdated >= now && x.IsAproved == true).ToListAsync();
+        foreach (var payment in payments)
+        {
+            earns += payment.Amount;
+        }
+
+        return earns;
+    }
+
+
+    public async Task<decimal> CountEarnsToday()
+    {
+        decimal earns = 0;
+        var now = DateTime.Now.AddDays(-1);
+        var payments = await _context.Payments.Where(x => x.DateUpdated >= now && x.IsAproved == true).ToListAsync();
+        foreach (var payment in payments)
+        {
+            earns += payment.Amount;
+        }
+        
+        return earns;
+    }
+
+    public async Task<int> CountInvoices()
+    {
+        var now = DateTime.Now.AddDays(-30);
+        var num = await _context.Payments.CountAsync(x => x.DateUpdated >= now);
+        return num;
+    }
+
+    public async Task<int> CountPaid()
+    {
+        var now = DateTime.Now.AddDays(-30);
+        var num = await _context.Payments.CountAsync(x => x.DateUpdated >= now && x.IsAproved == true);
+        return num;
+    }
 
 }
 

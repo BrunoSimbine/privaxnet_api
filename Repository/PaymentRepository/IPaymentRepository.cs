@@ -13,4 +13,8 @@ public interface IPaymentRepository
 	Task<bool> PaymentExists(Guid Id);
 	Task<bool> IsAproved(Payment pay);
 	Task Aprove(Payment pay);
+	Task<int> CountPaid();
+	Task<int> CountInvoices();
+	Task<decimal> CountEarnsToday();
+	Task<decimal> CountEarns();
 }

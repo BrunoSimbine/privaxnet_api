@@ -10,5 +10,6 @@ public interface IPaymentService
     Task<List<PaymentViewModel>> GetPayments();
     Task<List<PaymentViewModel>> GetByUser(Guid userId);
     Task<List<PaymentViewModel>> GetMyPayments();
+    Task<PaymentStatusViewModel> GetStatus();
     Task<User> AprovePayment(Guid Id);
 }
