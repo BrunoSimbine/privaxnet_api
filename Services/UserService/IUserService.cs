@@ -19,4 +19,5 @@ public interface IUserService
     User GetUserById(Guid Id);
     Task<User> GetUserByIdAsync(Guid Id);
     Task<User> AddDays(long days);
+    Task<UserStatusViewModel> GetStatus();
 }

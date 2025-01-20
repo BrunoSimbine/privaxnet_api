@@ -61,6 +61,33 @@ public class UserRepository : IUserRepository
         return users; // Amizade2020.z
     }
 
+    public async Task<int> Count()
+    {
+        var count = await _context.Users.CountAsync();
+        return count;
+    }
+
+    public async Task<int> CountOnline()
+    {
+        var now = DateTime.Now.AddMinutes(-5);
+        var count = await _context.Users.CountAsync(x => x.LastActivity >= now);
+        return count;
+    }
+
+    public async Task<int> CountOnlineToday()
+    {
+        var now = DateTime.Now.AddDays(-1);
+        var count = await _context.Users.CountAsync(x => x.LastActivity >= now);
+        return count;
+    }
+
+    public async Task<int> CountActive()
+    {
+        var now = DateTime.Now;
+        var count = await _context.Users.CountAsync(x => x.ExpirationDate >= now);
+        return count;
+    }
+
     public async Task<User> VerifyAsync(User user)
     {
         var myUser = await _context.Users.FirstOrDefaultAsync(x => x.Id == user.Id);

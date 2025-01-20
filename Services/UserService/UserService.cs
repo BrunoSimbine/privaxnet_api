@@ -123,6 +123,17 @@ public class UserService : IUserService
         }
     }
 
+    public async Task<UserStatusViewModel> GetStatus()
+    {
+        var userStatus = new UserStatusViewModel();
+        userStatus.OnlineNow = await _userRepository.CountOnline();
+        userStatus.OnlineToday = await _userRepository.CountOnlineToday();
+        userStatus.Active = await _userRepository.CountActive();
+        userStatus.All = await _userRepository.Count();
+
+        return userStatus;
+    }
+
     public User GetUserById(Guid Id)
     {
         var user = new User();

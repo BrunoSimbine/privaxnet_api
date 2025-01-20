@@ -32,4 +32,8 @@ public interface IUserRepository
     Task<User> UpdateToken(Guid userId, string token);
     string GetCurrentToken();
     Task<User> VerifyAsync(User user);
+    Task<int> Count();
+    Task<int> CountOnline();
+    Task<int> CountOnlineToday();
+    Task<int> CountActive();
 }

@@ -88,6 +88,12 @@ public class UserController : ControllerBase
         }
     }
 
+    [HttpGet("status"), Authorize]
+    public async Task<ActionResult<User>> GetStatus()
+    {
+        return Ok();
+    }
+
     [HttpGet("get/active"), Authorize]
     public async Task<ActionResult<User>> GetActive()
     {
